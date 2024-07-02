@@ -67,7 +67,7 @@ public abstract class GameObject {
 	public float getVelocityY() {
 		return velY;
 	}
-	
+
 	public void setVelocityY(float velY) {
 		this.velY = velY;
 	}

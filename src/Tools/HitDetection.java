@@ -8,7 +8,13 @@ import main.GameObject;
 import main.Handler;
 import main.ID;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 public class HitDetection {
+
+	private ShootMecha shootMecha;
+	private boolean firstEntry = false;
 
 	private long currentPhysical;
 	private long lastTimePhysical = 0;
@@ -24,9 +30,12 @@ public class HitDetection {
 	GameObject disabledPlant = null;
 	
 	private Handler handler;
-	
+
+	public HashMap<GameObject, Boolean> currentEnemies = new HashMap<>();
+	private boolean isFirstEntry = false;
+
 	//TODO: CREATE A NEW INSTANCE OF THIS EACH TIME A MOB/PLANT
-	public HitDetection(Handler handler, GameObject mainObj, ID objID) {
+	public HitDetection(Handler handler, GameObject mainObj) {
 		this.handler = handler;
 		this.mainObj = mainObj;
 		
@@ -36,15 +45,28 @@ public class HitDetection {
 		newCollision();
 	}
 	
-	
-	
+	//
 	private void newCollision() {
-		for(GameObject gameObject : handler.object) {
-			if(this.mainObj.getBound().intersects(gameObject.getBound())) {
-				if(this.mainObj.getID() == ID.Plant && gameObject.getID() == ID.Enemy) {
-					if(((Plant)this.mainObj).getType() == "Defender") {
-						((Plant)this.mainObj).enableShoot(gameObject);
+		for (GameObject gameObject : handler.getEnemies()) {
+			System.out.println(gameObject);
+			if (this.mainObj.getBound().intersects(gameObject.getBound()) && this.mainObj.getID() == ID.Plant) {
+
+				if (((Plant) this.mainObj).getType() == "Defender") {
+					if(currentEnemies.containsKey(gameObject)){
+						return;
+					}else{
+						currentEnemies.put(gameObject, true);
+						shootMecha = new ShootMecha(this.mainObj, gameObject);
+						shootMecha.shoot();
 					}
+				}
+			}else if(this.mainObj.getID() == ID.Projectile && this.mainObj.getBound().intersects(gameObject.getBound())){
+				gameObject.setHP(gameObject.getHP() - 5);
+			}else{
+
+				if(currentEnemies.containsKey(gameObject) || gameObject == null){
+					currentEnemies.remove(gameObject);
+					shootMecha.stopShoot();
 				}
 			}
 		}

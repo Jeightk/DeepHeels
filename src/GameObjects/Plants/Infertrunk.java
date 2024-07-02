@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import GameObjects.Plant;
 import Projectiles.Fireball;
+import Tools.HitDetection;
 import main.Game;
 import main.GameObject;
 import main.Handler;
@@ -15,36 +16,29 @@ import main.ID;
 
 public class Infertrunk extends Plant{
 
-	private long shootSpeed = 3000;
+	private long shootSpeed = 2000;
 	private Handler handler;
 	private boolean shootEnemy = false; // boolean to set plant defense active
 	private Timer timer;
+	private HitDetection hitDetection;
 	
 	public Infertrunk(float x, float y, ID id, String name, String type, Handler handler) {
 		super(x, y, id, name, type);
 		this.handler = handler;
 		this.isDefendable = true;
+		this.hitDetection = new HitDetection(handler, this);
 	}
 
 	@Override
 	public void tick() {
 		
-		collision();
-		
-	}
-
-	private void collision() {
-		
-		
+		hitDetection.tick();
 		
 	}
 
 	@Override
 	public void render(Graphics g) {
 		g.drawImage(Game.ss.grabImage(4, 7, 64, 64), (int)x, (int)y, null);
-		
-		g.setColor(Color.red);
-		g.drawRect((int)x-96, (int)y-96, 256, 256);
 
 	}
 
@@ -83,20 +77,7 @@ public class Infertrunk extends Plant{
 
 	@Override
 	public void shoot(GameObject targetObject) {
-		if(this.shootEnemy == true) {
-			timer = new Timer();
-			handler.addObject(new Fireball(x, y, ID.Projectile, "Fireball", 2, targetObject));
-			timer.scheduleAtFixedRate(new TimerTask() {
-				  @Override
-				  public void run() {
-				    handler.addObject(new Fireball(x, y, ID.Projectile, "Fireball", 2, targetObject));
-				  }
-				}, 5*1000, 5*1000);
-		}else if(this.shootEnemy == false) {
-			timer.cancel();
-		}
-		
-		
+		handler.addObject(new Fireball(x, y, ID.Projectile, "Fireball", 2, targetObject, handler));
 	}
 
 	@Override
@@ -104,7 +85,7 @@ public class Infertrunk extends Plant{
 		
 		if(this.shootEnemy != false) {
 			this.shootEnemy = false;
-			this.shoot(targetObject);
+//			this.shoot(targetObject);
 			System.out.println("has left");
 		}
 		

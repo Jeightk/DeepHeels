@@ -138,6 +138,14 @@ public class Handler {
         }
         return temp;
     }
-	
+	public LinkedList<GameObject> getEnemies(){
+		LinkedList<GameObject> enemies = new LinkedList<>();
+		for(GameObject o : this.object){
+			if(o.getID() == ID.Enemy){
+				enemies.add(o);
+			}
+		}
+		return enemies;
+	}
 
 }

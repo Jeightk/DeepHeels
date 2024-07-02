@@ -17,6 +17,7 @@ public abstract class Plant extends GameObject{
 		this.type = type;
 	}
 	public boolean isHarvested;
+	public long shootSpeed;
 	public boolean isDefendable = false;
 	public int size;
 	public abstract void tick();
