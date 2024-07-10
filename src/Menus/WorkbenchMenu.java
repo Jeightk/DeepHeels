@@ -1,16 +1,16 @@
 package Menus;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import Entities.Craftable;
 import Entities.EntityID;
+import Levels.LevelHandler;
 import Tiles.Tile;
 import Tiles.TileMap;
 import Tools.Recipes;
@@ -20,9 +20,14 @@ public class WorkbenchMenu {
 
 	private Inventory inventory;
 	private Recipes recipes;
+	private LevelHandler levelHandler;
 	int craftmenuX = Game.WIDTH/2-300;
 	int craftmenuY = 20;
-	
+
+	//For when hovering over the 'nextlevel' button
+	public boolean nextlevelhover = false;
+	public boolean startNextLevel = false;
+
 	//For running through the sets to find the craftables one time in the render
 	
 	//All craftable items
@@ -37,10 +42,10 @@ public class WorkbenchMenu {
 	private List<EntityID> itemTest;
 	private List<EntityID> inventoryToSet;
 	
-	public WorkbenchMenu(Inventory inventory, Recipes recipes) {
+	public WorkbenchMenu(Inventory inventory, Recipes recipes, LevelHandler levelHandler) {
 		this.inventory = inventory;
 		this.recipes = recipes;
-		
+		this.levelHandler = levelHandler;
 		
 	}
 	
@@ -54,6 +59,7 @@ public class WorkbenchMenu {
 	
 	public void render(Graphics g) {
 		g.drawImage(Game.workbenchIMG, craftmenuX, craftmenuY, null);
+		renderNextLevel(g, nextlevelhover);
 		//refreshes the craftables items each time the player opens the workbench
 		
 		g.setColor(Color.DARK_GRAY);
@@ -80,6 +86,25 @@ public class WorkbenchMenu {
 		
 		checkCraftmenuSize(g);
 		
+	}
+
+	//Render NextLevel
+	public void renderNextLevel(Graphics g, boolean b){
+		//This is for rendering the next level button & for hovering
+		if(b){
+			g.drawImage(Game.NextLevelIMGHover, craftmenuX+600, craftmenuY, null);
+		}else{
+			g.drawImage(Game.NextLevelIMG, craftmenuX+600, craftmenuY, null);
+		}
+
+	}
+	//Gets the bounds of the check mark to proceed to the next level.
+	public Rectangle nextLevelBounds(){
+		return new Rectangle(craftmenuX+600+105, craftmenuY+64, 94,71);
+	}
+	//This renders the starting countdown for the next level to start
+	public void renderStartNextLevel(Graphics g){
+		levelHandler.startCountdown(g);
 	}
 	
 	public void createSlots(TileMap tileMap) {

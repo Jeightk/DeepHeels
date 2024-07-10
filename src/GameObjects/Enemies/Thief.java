@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import Entities.Entity;
-import Entities.EntityID;
-import Entities.EntityIvoriane;
-import Entities.EntityType;
+import Entities.*;
 import GameObjects.Enemy;
 import GameObjects.Plant;
 import HUD.Healthbar;
@@ -78,7 +75,7 @@ public class Thief extends Enemy{
 
 	@Override
 	public List<Entity> getItemDrops() {
-		List<Entity> drops = Arrays.asList(new EntityIvoriane((int)x, (int)y, EntityID.EntityIvoriane, EntityType.Material));
+		List<Entity> drops = Arrays.asList(new EntityIvoriane((int)x, (int)y, EntityID.EntityIvoriane, EntityType.Material), new EntityViperusSeed((int)x, (int)y, EntityID.EntityViperusSeed, EntityType.Seed));
 		return drops;
 	}
 

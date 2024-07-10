@@ -13,7 +13,9 @@ import Entities.EntityHandler;
 import GameObjects.Player;
 import GameObjects.Workbench;
 import HUD.Healthbar;
+import Levels.LevelHandler;
 import Menus.Inventory;
+import Menus.Hotbar;
 import Menus.MainMenu;
 import Menus.Menus;
 import Menus.WorkbenchMenu;
@@ -71,7 +73,10 @@ public class Game extends Canvas implements Runnable{
 	public static BufferedImage inventoryIMG = null;
 	public static BufferedImage inventorySelector = null;
 	public static BufferedImage workbenchIMG = null;
+	public static BufferedImage NextLevelIMG = null;
+	public static BufferedImage NextLevelIMGHover = null;
 	public static BufferedImage healthbarIMG = null;
+	public static BufferedImage hotbarIMG = null;
 	
 	public static BufferedImage mainMenubackground = null;
 	public static BufferedImage mainMenubackgroundPlayClick = null;
@@ -87,6 +92,7 @@ public class Game extends Canvas implements Runnable{
 	private KeyInput keyInput;
 	
 	private Inventory inventory;
+	private Hotbar hotbar;
 	private Recipes recipes;
 	private WorkbenchMenu workbenchmenu;
 	private Menus menus;
@@ -95,6 +101,7 @@ public class Game extends Canvas implements Runnable{
 	
 	private Healthbar healthbar;
 	private PlantGrowth plantGrowth;
+	private LevelHandler levelHandler;
 	
 	private int TILLABLE_LAND = 10;
 	
@@ -111,12 +118,14 @@ public class Game extends Canvas implements Runnable{
 		handler = new Handler();
 		entityHandler = new EntityHandler();
 		craftableHandler = new CraftableHandler();
+		levelHandler = new LevelHandler(handler, this);
 		
 		grasslandscape = new GrassLandscape(this);
 		mainMenu = new MainMenu(this, grasslandscape);
 		recipes = new Recipes(craftableHandler);
 		inventory=new Inventory();
-		workbenchmenu = new WorkbenchMenu(inventory, recipes);
+		hotbar = new Hotbar(inventory);
+		workbenchmenu = new WorkbenchMenu(inventory, recipes, levelHandler);
 		tileMap = new TileMap(handler);
 		menus = new Menus(inventory, tileMap, workbenchmenu, this);
 		healthbar = new Healthbar(600, 10, Game.WIDTH/2-(600/2), 25);
@@ -125,9 +134,9 @@ public class Game extends Canvas implements Runnable{
 		
 		
 		
-		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this);
+		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this, levelHandler);
 		 
-		keyInput = new KeyInput(handler, menus, this);
+		keyInput = new KeyInput(handler, menus, this, levelHandler);
 		
 		this.addKeyListener(keyInput);
 		this.addMouseListener(mouseInput);
@@ -153,7 +162,10 @@ public class Game extends Canvas implements Runnable{
 			inventoryIMG = loader.loadImage("sprites/inventory.png");
 			inventorySelector = loader.loadImage("sprites/inventorySelector.png");
 			workbenchIMG = loader.loadImage("sprites/crafting.png");
+			NextLevelIMG = loader.loadImage("sprites/nextlevel.png");
+			NextLevelIMGHover = loader.loadImage("sprites/nextlevelhover.png");
 			healthbarIMG = loader.loadImage("sprites/healthbar.png");
+			hotbarIMG = loader.loadImage("sprites/hotbar.png");
 			mapRender.renderMap();
 			tileMap.setTiles();
 		}catch(IOException e) {
@@ -234,6 +246,7 @@ public class Game extends Canvas implements Runnable{
 		if(gameState == STATE.Game) {
 			tileMap.render(g);
 			tileMap.renderFarmableTiles(g);
+			levelHandler.render(g);
 		}else if(gameState == STATE.Inventory) {
 			tileMap.renderInventoryTiles(g);
 			tileMap.renderInventoryGearTiles(g);

@@ -48,7 +48,6 @@ public class HitDetection {
 	//
 	private void newCollision() {
 		for (GameObject gameObject : handler.getEnemies()) {
-			System.out.println(gameObject);
 			if (this.mainObj.getBound().intersects(gameObject.getBound()) && this.mainObj.getID() == ID.Plant) {
 
 				if (((Plant) this.mainObj).getType() == "Defender") {

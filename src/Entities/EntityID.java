@@ -7,6 +7,7 @@ public enum EntityID {
 	EntityFlamecrestSeed(),
 	EntityIvoriane(),
 	EntityHotrod(),
-	EntityTill()
+	EntityTill(),
+	EntityViperusSeed()
 	
 }

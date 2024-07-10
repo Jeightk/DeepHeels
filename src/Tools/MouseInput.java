@@ -8,15 +8,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
-import Entities.Craftable;
-import Entities.Entity;
-import Entities.EntityFlamecrestSeed;
-import Entities.EntityHandler;
-import Entities.EntityID;
-import Entities.EntityType;
+import Entities.*;
 import GameObjects.Enemy;
 import GameObjects.Player;
 import GameObjects.TilledSoil;
+import Levels.LevelHandler;
 import Menus.Inventory;
 import Menus.MainMenu;
 import Menus.Menus;
@@ -44,6 +40,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 	private EntityHandler entityHandler;
 	private MainMenu mainmenu;
 	private PlantGrowth plantGrowth;
+	private LevelHandler levelHandler;
 	
 	private GameObject player;
 	private boolean clickedItemCraftable = false;
@@ -68,7 +65,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 	private boolean renderAvailableTillSoil = false;
 	private boolean FarmingMode = false;
 	
-	public MouseInput(Handler handler, TileMap tileMap, Inventory inventory, Menus menus, WorkbenchMenu workbenchmenu, EntityHandler entityHandler, MainMenu mainmenu, PlantGrowth plantGrowth, Game game) {
+	public MouseInput(Handler handler, TileMap tileMap, Inventory inventory, Menus menus, WorkbenchMenu workbenchmenu, EntityHandler entityHandler, MainMenu mainmenu, PlantGrowth plantGrowth, Game game, LevelHandler levelHandler) {
 		this.game = game;
 		this.handler = handler;
 		this.tileMap = tileMap;
@@ -78,6 +75,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 		this.entityHandler = entityHandler;
 		this.mainmenu = mainmenu;
 		this.plantGrowth = plantGrowth;
+		this.levelHandler = levelHandler;
 	}
 	
 	
@@ -132,6 +130,11 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 					
 					}
 					
+				}else if(handler.getTile(mouseX, mouseY) == ID.TilledSoil && inventory.getOffhand().getEntityID() == EntityID.EntityViperusSeed){
+					handler.removeObject(handler.getExactObject(mouseX, mouseY, ID.TilledSoil));
+					handler.addObject(new TilledSoil(tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY(), ID.TilledSoil, EntityID.EntityViperusSeed, 0), 1);
+					inventory.removeGear(null, EntityViperusSeed.class, 4);
+					plantGrowth.startGrowth(handler.getExactObject(mouseX, mouseY, ID.TilledSoil), EntityID.EntityViperusSeed, tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY());
 				}
 			}
 			
@@ -429,6 +432,15 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 			
 		//Workbench crafting items
 		}else if(game.gameState == Game.STATE.Workbench) {
+			//When clicked it loads the next level
+			if(workbenchmenu.nextlevelhover){
+				game.gameState = STATE.Game;
+				levelHandler.countdownStart = true;
+				levelHandler.startTimer();
+				menus.openWorkbench = false;
+				menus.setEntityMessageVisible(false);
+			}
+
 			for(int i = 0; i < workbenchmenu.craftables.size(); i++) {
 				if(tileMap.workbenchTiles.get(i).isSelected) {
 					Craftable c = workbenchmenu.craftableLocation.get(tileMap.workbenchTiles.get(i));
@@ -503,8 +515,13 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 				}
 			}
 		}else if(game.gameState == Game.STATE.Workbench) {
-//			System.out.println(workbenchmenu.craftables.size());
-//			System.out.println(tileMap.workbenchTiles.size());
+			//This is for rendering the next level button & for hovering
+			if(workbenchmenu.nextLevelBounds().contains(mouseX, mouseY)){
+				workbenchmenu.nextlevelhover = true;
+			}else{
+				workbenchmenu.nextlevelhover = false;
+			}
+			//rendering selected tiles in craftbench
 			for(int i = 0; i < workbenchmenu.craftables.size(); i++) {
 				if(tileMap.workbenchTiles.get(i).getBounds().contains(mouseX, mouseY)) {
 					tileMap.workbenchTiles.get(i).isSelected = true;

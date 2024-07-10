@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 
 import GameObjects.Enemies.Thief;
 import GameObjects.Plants.Infertrunk;
+import GameObjects.Plants.Viperus;
+import Levels.LevelHandler;
 import Menus.Inventory;
 import Menus.Menus;
 import main.Game;
@@ -19,6 +21,7 @@ public class KeyInput extends KeyAdapter{
 	private Handler handler;
 	private Menus menus;
 	private Game game;
+	private LevelHandler levelHandler;
 	
 	private boolean wkey = false;
 	private boolean skey = false;
@@ -28,10 +31,11 @@ public class KeyInput extends KeyAdapter{
 	
 	public boolean FULLSCREEN = false;
 	
-	public KeyInput(Handler handler, Menus menus, Game game) {
+	public KeyInput(Handler handler, Menus menus, Game game, LevelHandler levelHandler) {
 		this.handler = handler;
 		this.menus = menus;
 		this.game = game;
+		this.levelHandler = levelHandler;
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -89,9 +93,14 @@ public class KeyInput extends KeyAdapter{
 		if(key == KeyEvent.VK_F) {
 			handler.addObject(new Thief(100, 100, ID.Enemy, 100, 10, 3000, handler));
 		}
-		
+
+		if(key == KeyEvent.VK_N){
+			levelHandler.AscendLevel();
+		}
+
 		if(key == KeyEvent.VK_L) {
-			handler.addObject(new Infertrunk(400, 400, ID.Plant, "Infertrunk", "Defender", handler));
+//			handler.addObject(new Infertrunk(400, 400, ID.Plant, "Infertrunk", "Defender", handler));
+			handler.addObject(new Viperus(400, 400, ID.Plant, "Viperus", "Defender"));
 		}
 		
 	}
