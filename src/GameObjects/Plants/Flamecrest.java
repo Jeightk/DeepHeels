@@ -3,9 +3,8 @@ package GameObjects.Plants;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-import Entities.EntityElderberry;
 import Entities.EntityFlamecrest;
-import Entities.EntityFlamecrestSeed;
+import Entities.Seeds.EntityFlamecrestSeed;
 import Entities.EntityHandler;
 import Entities.EntityID;
 import Entities.EntityType;

@@ -20,8 +20,10 @@ import Tiles.TileMap;
 public class Handler {
 	
 	public LinkedList<GameObject> object = new LinkedList<GameObject>();
-	
-	
+
+	public String characterName = "";
+
+
 	public void tick() {
 		
 		for(int i = 0; i < object.size(); i++) {
@@ -41,6 +43,15 @@ public class Handler {
 		
 		
 	}
+
+	public String getCharacterName(){
+		return characterName;
+	}
+
+	public void setCharacterName(String name){
+		this.characterName = name;
+	}
+
 	//OVERLOAD FOR WHEN A POSITION IS NEEDED FOR THE OBJECT IN THE LIST
 	public void addObject(GameObject object, int position) {
 		this.object.add(position, object);
@@ -146,6 +157,15 @@ public class Handler {
 			}
 		}
 		return enemies;
+	}
+
+	public GameObject getPlayer(){
+		for(int i = 0; i < this.object.size(); i++) {
+			if(this.object.get(i).getID() == ID.Player){
+				return this.object.get(i);
+			}
+		}
+		return null;
 	}
 
 }

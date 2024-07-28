@@ -10,6 +10,7 @@ import GameObjects.Plants.Ivoriane;
 import HUD.Healthbar;
 import Menus.Inventory;
 import main.Game;
+import main.GameObject;
 import main.Handler;
 import main.ID;
 
@@ -48,17 +49,30 @@ public class MapRender {
 			
 		}
 		
-		handler.addObject(new Player(100, 100, ID.Player, game, entityHandler, inventory, healthbar, handler));
+		handler.addObject(new Player(Game.WIDTH/2-32,150, ID.Player, game, entityHandler, inventory, healthbar, handler));
 		
+	}
+
+	public void updatePlayerRender(){
+		for(int i = 0; i < handler.object.size(); i++){
+			if(handler.object.get(i).getID() == ID.Player){
+				float tempX = handler.object.get(i).getX();
+				float tempY = handler.object.get(i).getY();
+				handler.removeObject(handler.object.get(i));
+				handler.addObject(new Player(tempX, tempY, ID.Player, game, entityHandler, inventory, healthbar, handler));
+			}
+		}
 	}
 	
 	public int figureX() {
-		int x = random.nextInt(30);
+		int findInteger = Game.WIDTH/32;
+		int x = random.nextInt(findInteger);
 		return x*32;
 	}
 	
 	public int figureY() {
-		int y = random.nextInt(20);
+		int findInteger = Game.HEIGHT/32;
+		int y = random.nextInt(findInteger);
 		return y*32;
 	}
 	

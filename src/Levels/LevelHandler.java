@@ -3,6 +3,7 @@ package Levels;
 import GameObjects.Enemies.Thief;
 import GameObjects.Plant;
 import main.Game;
+import main.GameObject;
 import main.Handler;
 import main.ID;
 import java.util.Timer;
@@ -39,10 +40,11 @@ public class LevelHandler {
     }
 
     public void populateMobs(){
+        GameObject Player = handler.getPlayer();
         switch(this.CurrentLevel){
             case 1:
-                handler.addObject(new Thief(rand.nextFloat(Game.WIDTH - 20), rand.nextFloat(Game.HEIGHT - 20), ID.Enemy, 100, 10, 3000, handler));
-                handler.addObject(new Thief(rand.nextFloat(Game.WIDTH - 20), rand.nextFloat(Game.HEIGHT - 20), ID.Enemy, 100, 10, 3000, handler));
+                handler.addObject(new Thief(rand.nextFloat(Game.WIDTH - 20), rand.nextFloat(Game.HEIGHT - 20), ID.Enemy,100, 3000, Player, handler));
+                handler.addObject(new Thief(rand.nextFloat(Game.WIDTH - 20), rand.nextFloat(Game.HEIGHT - 20), ID.Enemy,100, 3000, Player, handler));
         }
     }
 

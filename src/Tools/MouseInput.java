@@ -3,18 +3,22 @@ package Tools;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 import Entities.*;
+import Entities.Seeds.EntityFlamecrestSeed;
+import Entities.Seeds.EntityLilypatSeed;
+import Entities.Seeds.EntityViperusSeed;
 import GameObjects.Enemy;
+import GameObjects.Plant;
 import GameObjects.Player;
 import GameObjects.TilledSoil;
 import Levels.LevelHandler;
 import Menus.Inventory;
 import Menus.MainMenu;
+import Menus.CharacterSelect;
 import Menus.Menus;
 import Menus.WorkbenchMenu;
 import Tiles.Tile;
@@ -41,7 +45,9 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 	private MainMenu mainmenu;
 	private PlantGrowth plantGrowth;
 	private LevelHandler levelHandler;
-	
+	private MapRender mapRender;
+	private CharacterSelect characterSelect;
+
 	private GameObject player;
 	private boolean clickedItemCraftable = false;
 	private boolean clickedItemEntity = false;
@@ -63,9 +69,10 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 	private Object itemSelected = null;
 	private EntityType itemType = null;
 	private boolean renderAvailableTillSoil = false;
-	private boolean FarmingMode = false;
-	
-	public MouseInput(Handler handler, TileMap tileMap, Inventory inventory, Menus menus, WorkbenchMenu workbenchmenu, EntityHandler entityHandler, MainMenu mainmenu, PlantGrowth plantGrowth, Game game, LevelHandler levelHandler) {
+
+	public boolean FarmingMode;
+
+	public MouseInput(Handler handler, TileMap tileMap, Inventory inventory, Menus menus, WorkbenchMenu workbenchmenu, EntityHandler entityHandler, MainMenu mainmenu, PlantGrowth plantGrowth, Game game, LevelHandler levelHandler, MapRender mapRender, CharacterSelect characterSelect) {
 		this.game = game;
 		this.handler = handler;
 		this.tileMap = tileMap;
@@ -76,8 +83,12 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 		this.mainmenu = mainmenu;
 		this.plantGrowth = plantGrowth;
 		this.levelHandler = levelHandler;
+		this.mapRender = mapRender;
+		this.characterSelect = characterSelect;
+		FarmingMode = plantGrowth.getFarmingMode();
+
+		player = handler.getPlayer();
 	}
-	
 	
 	
 	
@@ -102,39 +113,31 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 	public void mousePressed(MouseEvent e) {
 		int mouseX=e.getX();
 		int mouseY=e.getY();
-		
-		
-		
-		
-		for(GameObject go : handler.object.toArray(new GameObject[0])) {
-			
-			if(go.getID() == ID.Player) {
-				player = go;
-			}
-			
+		if(player == null){
+			this.player = handler.getPlayer();
 		}
-		
-		
-		
-		
+
 		if(game.gameState == Game.STATE.Game) {
 			
 			//Planting seeds
-			if(inventory.getOffhand() != null) {
+			if(inventory.getOffhand() != null && !handler.isSeeded(mouseX, mouseY, ID.TilledSoil)) {
 				if(handler.getTile(mouseX, mouseY) == ID.TilledSoil && inventory.getOffhand().getEntityID() == EntityID.EntityFlamecrestSeed) {
-					if(!handler.isSeeded(mouseX, mouseY, ID.TilledSoil)) {
-						handler.removeObject(handler.getExactObject(mouseX, mouseY, ID.TilledSoil));
-						handler.addObject(new TilledSoil(tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY(), ID.TilledSoil, EntityID.EntityFlamecrestSeed, 0), 1);
-						inventory.removeGear(null, EntityFlamecrestSeed.class, 4);
-						plantGrowth.startGrowth(handler.getExactObject(mouseX, mouseY, ID.TilledSoil), EntityID.EntityFlamecrestSeed, tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY());
-					
-					}
-					
+					handler.removeObject(handler.getExactObject(mouseX, mouseY, ID.TilledSoil));
+					handler.addObject(new TilledSoil(tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY(), ID.TilledSoil, EntityID.EntityFlamecrestSeed, 0), 1);
+					inventory.removeGear(null, EntityFlamecrestSeed.class, 4);
+					plantGrowth.startGrowth(handler.getExactObject(mouseX, mouseY, ID.TilledSoil), EntityID.EntityFlamecrestSeed, tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY());
+
 				}else if(handler.getTile(mouseX, mouseY) == ID.TilledSoil && inventory.getOffhand().getEntityID() == EntityID.EntityViperusSeed){
 					handler.removeObject(handler.getExactObject(mouseX, mouseY, ID.TilledSoil));
 					handler.addObject(new TilledSoil(tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY(), ID.TilledSoil, EntityID.EntityViperusSeed, 0), 1);
 					inventory.removeGear(null, EntityViperusSeed.class, 4);
 					plantGrowth.startGrowth(handler.getExactObject(mouseX, mouseY, ID.TilledSoil), EntityID.EntityViperusSeed, tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY());
+
+				}else if(handler.getTile(mouseX, mouseY) == ID.TilledSoil && inventory.getOffhand().getEntityID() == EntityID.EntityLilypatSeed){
+					handler.removeObject(handler.getExactObject(mouseX, mouseY, ID.TilledSoil));
+					handler.addObject(new TilledSoil(tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY(), ID.TilledSoil, EntityID.EntityLilypatSeed, 0), 1);
+					inventory.removeGear(null, EntityLilypatSeed.class, 4);
+					plantGrowth.startGrowth(handler.getExactObject(mouseX, mouseY, ID.TilledSoil), EntityID.EntityLilypatSeed, tileMap.getClosestFarmableTile(mouseX, mouseY).getX(), tileMap.getClosestFarmableTile(mouseX, mouseY).getY());
 				}
 			}
 			
@@ -168,7 +171,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 				
 				//Harvesting plants
 				if(tObject.getID() == ID.Plant && FarmingMode == false) {
-					if(tObject.getBound().contains(mouseX, mouseY)){
+					if(tObject.getBound().contains(mouseX, mouseY) && ((Plant)tObject).getType() == "Producer"){
 						tObject.whenClicked();
 						Tile t = new Tile(tObject.getSize(), tObject.getSize(), (tObject.getX()/tObject.getSize())*tObject.getSize(), (tObject.getY()/tObject.getSize())*tObject.getSize());
 						for(int i = 0; i < tileMap.tileList.size(); i++) {
@@ -186,8 +189,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 						//Checking if attacking object is an enemy
 						if(tObject.getID() == ID.Enemy) {
 							//if Hp is lower than 0 after subtract of fist dmg then remove object, else remove 10 hp.
-							if(tObject.getHP() - 10 <= 0) {
-								handler.removeObject(tObject);
+							if(tObject.getHP() - ((Player)player).getDamage() <= 0) {
+								((Enemy)tObject).objectCleanup();
 								entityHandler.addMultipleEntities(((Enemy)tObject).getItemDrops());
 							}else {
 								tObject.setHP(tObject.getHP()-((Player) player).getDamage());
@@ -300,7 +303,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 //								tileMap.tileList.clear();
 								tileMap.setFarmableTiles();
 								tileMap.tileList.clear();
-								FarmingMode = true;
+								plantGrowth.setFarmingMode(true);
+								this.FarmingMode = true;
 								renderAvailableTillSoil = true;
 							}
 							
@@ -375,7 +379,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 									tileMap.tileList.clear();
 									tileMap.setTiles();
 									tileMap.deselectAllTiles(tileMap.farmingTileList);
-									FarmingMode = false;
+									plantGrowth.setFarmingMode(false);
+									this.FarmingMode = false;
 									renderAvailableTillSoil = false;
 								}
 								
@@ -412,7 +417,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 									tileMap.tileList.clear();
 									tileMap.setTiles();
 									tileMap.deselectAllTiles(tileMap.farmingTileList);
-									FarmingMode = false;
+									plantGrowth.setFarmingMode(false);
+									this.FarmingMode = false;
 								}
 								
 								return;
@@ -454,11 +460,42 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 				}
 			}
 		}else if(game.gameState == Game.STATE.Menu) {
-			//Mouse click -- play button
-			if(mouseOver(mouseX, mouseY, 122, 330, 203, 70)) {
-				game.gameState = Game.STATE.Game;
-				System.out.println("Game started");
+
+
+			if(characterSelect.isActive){ // Selecting a character
+				if(mouseOver(mouseX, mouseY, Game.WIDTH / 2 - 80, Game.HEIGHT / 2 - 31, 64, 64)) { // Otis
+					characterSelect.setRenderName("Otis", (Game.WIDTH / 2 - 80), (Game.HEIGHT / 2 - 31) - 5);
+					characterSelect.hightlightCharacter(Game.WIDTH / 2 - 80, Game.HEIGHT / 2 - 31);
+					characterSelect.permaHighlight = true;
+				}else if(mouseOver(mouseX, mouseY, Game.WIDTH / 2 + 16, Game.HEIGHT / 2 - 31, 64, 64)){ // Myk
+					characterSelect.setRenderName("Myk", (Game.WIDTH / 2 + 16), (Game.HEIGHT / 2 - 31) - 5);
+					characterSelect.hightlightCharacter(Game.WIDTH / 2 + 16, Game.HEIGHT / 2 - 31);
+					characterSelect.permaHighlight = true;
+				}else if(mouseOver(mouseX, mouseY, (Game.WIDTH/2 - 400)+301, (Game.HEIGHT / 2 - 300)+485, 200, 64) && characterSelect.renderName) {
+					handler.setCharacterName(characterSelect.name);
+					game.gameState = Game.STATE.Game;
+					mapRender.renderMap();
+					tileMap.setTiles();
+					System.out.println("testo");
+				}else{
+					characterSelect.permaHighlight = false;
+					characterSelect.highlight = false;
+					characterSelect.renderName = false;
+				}
+				return;
+			}else{
+				//Mouse click -- play button
+				if(mouseOver(mouseX, mouseY, 122, 330, 203, 70)) {
+//				game.gameState = Game.STATE.Game;
+					characterSelect.isActive = true;
+					mainmenu.isCharacterSelect = true;
+//				mapRender.renderMap();
+//				tileMap.setTiles();
+				}
 			}
+
+
+
 		}
 		
 		
@@ -474,7 +511,6 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 		this.mouseX = e.getX();
 		this.mouseY = e.getY();
 		if(game.gameState == Game.STATE.Game) {
-			
 			//When farming mode is activated render the farmable tiles
 			if(FarmingMode) {
 				for(int i = 0; i < tileMap.farmingTileList.size(); i++) {
@@ -530,35 +566,50 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 				}
 			}
 		}else if(game.gameState == Game.STATE.Menu) {
-			if(mouseOver(mouseX, mouseY, 122, 330, 203, 70)) {
-				mainmenu.renderPlayButton = true;
-				mainmenu.renderLoadButton =false;
-				mainmenu.renderQuitButton=false;
-				mainmenu.renderAboutButton=false;
-			}else if(mouseOver(mouseX, mouseY, 122, 451, 203, 70)){
-				mainmenu.renderLoadButton=true;
-				mainmenu.renderPlayButton=false;
-				mainmenu.renderQuitButton=false;
-				mainmenu.renderAboutButton=false;
-			}else if(mouseOver(mouseX, mouseY, 1002, 458, 140, 53)) {
-				mainmenu.renderQuitButton = true;
-				mainmenu.renderLoadButton=false;
-				mainmenu.renderPlayButton=false;
-				mainmenu.renderAboutButton=false;
-			}else if(mouseOver(mouseX, mouseY, 1024, 531, 95, 25)) {
-				mainmenu.renderAboutButton=true;
-				mainmenu.renderQuitButton = false;
-				mainmenu.renderLoadButton=false;
-				mainmenu.renderPlayButton=false;
-			}else if(mainmenu.d.isMouseInside(mouseX, mouseY)) {
-				mainmenu.renderLetter=true;
-				mainmenu.renderQuitButton = false;
-				mainmenu.renderLoadButton=false;
-				mainmenu.renderPlayButton=false;
-				mainmenu.renderAboutButton=false;
-			}else {
-				mainmenu.findLetterToRender(mouseX, mouseY);
+			if(characterSelect.isActive){ // CHARACTER SELECT HOVERING
+				if(characterSelect.permaHighlight){
+					return;
+				}
+				if(mouseOver(mouseX, mouseY, Game.WIDTH / 2 - 80, Game.HEIGHT / 2 - 31, 64, 64)){ // Jake
+					characterSelect.hightlightCharacter(Game.WIDTH / 2 - 80, Game.HEIGHT / 2 - 31);
+				}else if(mouseOver(mouseX, mouseY, Game.WIDTH / 2 + 16, Game.HEIGHT / 2 - 31, 64, 64)){ // Myk
+					characterSelect.hightlightCharacter(Game.WIDTH / 2 + 16, Game.HEIGHT / 2 - 31);
+				}else{
+					characterSelect.highlight = false;
+				}
+			}else{
+				if(mouseOver(mouseX, mouseY, 122, 330, 203, 70)) {
+					mainmenu.renderPlayButton = true;
+					mainmenu.renderLoadButton =false;
+					mainmenu.renderQuitButton=false;
+					mainmenu.renderAboutButton=false;
+				}else if(mouseOver(mouseX, mouseY, 122, 451, 203, 70)){
+					mainmenu.renderLoadButton=true;
+					mainmenu.renderPlayButton=false;
+					mainmenu.renderQuitButton=false;
+					mainmenu.renderAboutButton=false;
+				}else if(mouseOver(mouseX, mouseY, 1002, 458, 140, 53)) {
+					mainmenu.renderQuitButton = true;
+					mainmenu.renderLoadButton=false;
+					mainmenu.renderPlayButton=false;
+					mainmenu.renderAboutButton=false;
+				}else if(mouseOver(mouseX, mouseY, 1024, 531, 95, 25)) {
+					mainmenu.renderAboutButton=true;
+					mainmenu.renderQuitButton = false;
+					mainmenu.renderLoadButton=false;
+					mainmenu.renderPlayButton=false;
+				}else if(mainmenu.d.isMouseInside(mouseX, mouseY)) {
+					mainmenu.renderLetter=true;
+					mainmenu.renderQuitButton = false;
+					mainmenu.renderLoadButton=false;
+					mainmenu.renderPlayButton=false;
+					mainmenu.renderAboutButton=false;
+				}else {
+					mainmenu.findLetterToRender(mouseX, mouseY);
+				}
 			}
+
+
 		}
 		
 		if(clickedItemCraftable || clickedItemEntity) {

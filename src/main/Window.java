@@ -1,8 +1,8 @@
 package main;
 
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JFrame;
 
@@ -31,18 +31,25 @@ public class Window extends Canvas{
 			game.start();
 		}else {
 			frame.setPreferredSize(new Dimension(width, height));
-			frame.setMaximumSize(new Dimension(width, height));
+//			frame.setMaximumSize(new Dimension(width, height));
 			frame.setMinimumSize(new Dimension(width, height));
 			
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.setResizable(false);
+			frame.setResizable(true);
 			frame.setLocationRelativeTo(null);
 			frame.add(game);
 			frame.setVisible(true);
 			game.start();
 		}
-		
-		
+
+		frame.addComponentListener(new ComponentAdapter()
+		{
+			public void componentResized(ComponentEvent evt) {
+				Component c = (Component)evt.getSource();
+				game.setWIDTH(frame.getWidth());
+				game.setHEIGHT(frame.getHeight());
+			}
+		});
 		
 	}
 	

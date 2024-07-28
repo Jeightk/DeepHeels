@@ -17,6 +17,7 @@ import Levels.LevelHandler;
 import Menus.Inventory;
 import Menus.Hotbar;
 import Menus.MainMenu;
+import Menus.CharacterSelect;
 import Menus.Menus;
 import Menus.WorkbenchMenu;
 import Tiles.TileMap;
@@ -37,8 +38,9 @@ public class Game extends Canvas implements Runnable{
 
 	//TO FIX THE FULL SCREEN BUG CHANGE 2 TO 3
 //	public static final int WIDTH = (640)*2, HEIGHT = (WIDTH/12*9);
-	public static final int WIDTH = 1280, HEIGHT = 736;
-	
+	public static int WIDTH = 1280, HEIGHT = 736;
+//	public static final int WIDTH = 1800, HEIGHT = 900;
+
 	
 	
 	/* THE PRIORITY OF ELEMENTS OF THE GAME
@@ -65,11 +67,13 @@ public class Game extends Canvas implements Runnable{
 	
 	private BufferedImage spritesheet;
 	private BufferedImage enemySprites;
+	private BufferedImage defendersSprites;
 	private BufferedImage grassBackground = null;
 	
 	
 	public static SpriteSheet ss;
 	public static SpriteSheet enemySS;
+	public static SpriteSheet defendersSS;
 	public static BufferedImage inventoryIMG = null;
 	public static BufferedImage inventorySelector = null;
 	public static BufferedImage workbenchIMG = null;
@@ -77,6 +81,8 @@ public class Game extends Canvas implements Runnable{
 	public static BufferedImage NextLevelIMGHover = null;
 	public static BufferedImage healthbarIMG = null;
 	public static BufferedImage hotbarIMG = null;
+	public static BufferedImage characterSelectIMG = null;
+	public static BufferedImage startButtonHOVERIMG = null;
 	
 	public static BufferedImage mainMenubackground = null;
 	public static BufferedImage mainMenubackgroundPlayClick = null;
@@ -98,6 +104,7 @@ public class Game extends Canvas implements Runnable{
 	private Menus menus;
 	private GrassLandscape grasslandscape;
 	private MainMenu mainMenu;
+	private CharacterSelect characterSelect;
 	
 	private Healthbar healthbar;
 	private PlantGrowth plantGrowth;
@@ -128,21 +135,21 @@ public class Game extends Canvas implements Runnable{
 		workbenchmenu = new WorkbenchMenu(inventory, recipes, levelHandler);
 		tileMap = new TileMap(handler);
 		menus = new Menus(inventory, tileMap, workbenchmenu, this);
+		characterSelect = new CharacterSelect(this);
 		healthbar = new Healthbar(600, 10, Game.WIDTH/2-(600/2), 25);
 		mapRender = new MapRender(2, handler, entityHandler, inventory, healthbar, this);
-		plantGrowth = new PlantGrowth(handler);		
-		
-		
-		
-		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this, levelHandler);
-		 
+		plantGrowth = new PlantGrowth(handler, tileMap, mapRender);
+
+		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this, levelHandler, mapRender, characterSelect);
+
+
 		keyInput = new KeyInput(handler, menus, this, levelHandler);
 		
 		this.addKeyListener(keyInput);
 		this.addMouseListener(mouseInput);
 		this.addMouseMotionListener(mouseInput);
 		
-		handler.addObject(new Workbench((Game.WIDTH/2)-16,100, ID.Workbench));
+		handler.addObject(new Workbench(Game.WIDTH/2-32,100, ID.Workbench));
 		new Window(WIDTH, HEIGHT, "DEEP HEELS", false, this);
 		
 		
@@ -153,6 +160,7 @@ public class Game extends Canvas implements Runnable{
 		try {
 			spritesheet = loader.loadImage("sprites/sprite_sheet.png");
 			enemySprites = loader.loadImage("sprites/enemies.png");
+			defendersSprites = loader.loadImage("sprites/defenders.png");
 			grassBackground = loader.loadImage("sprites/grassbackground.png");
 			mainMenubackground = loader.loadImage("sprites/menubackground.png");
 			mainMenubackgroundPlayClick = loader.loadImage("sprites/menubackgroundwhenPlayClicked.png");
@@ -161,18 +169,19 @@ public class Game extends Canvas implements Runnable{
 			mainMenubackgroundAboutClick = loader.loadImage("sprites/menubackgroundwhenAboutClicked.png");
 			inventoryIMG = loader.loadImage("sprites/inventory.png");
 			inventorySelector = loader.loadImage("sprites/inventorySelector.png");
+			characterSelectIMG = loader.loadImage("sprites/characterselect.png");
+			startButtonHOVERIMG = loader.loadImage("sprites/startbuttonHOVER.png");
 			workbenchIMG = loader.loadImage("sprites/crafting.png");
 			NextLevelIMG = loader.loadImage("sprites/nextlevel.png");
 			NextLevelIMGHover = loader.loadImage("sprites/nextlevelhover.png");
 			healthbarIMG = loader.loadImage("sprites/healthbar.png");
 			hotbarIMG = loader.loadImage("sprites/hotbar.png");
-			mapRender.renderMap();
-			tileMap.setTiles();
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 		ss = new SpriteSheet(spritesheet);
 		enemySS = new SpriteSheet(enemySprites);
+		defendersSS = new SpriteSheet(defendersSprites);
 		
 	}
 	//possibly fix the issue of inventory taking a while to load on the first load
@@ -185,7 +194,15 @@ public class Game extends Canvas implements Runnable{
 		}
 		
 	}
-	
+
+	public void setWIDTH(int width){
+		this.WIDTH = width;
+	}
+
+	public void setHEIGHT(int height){
+		this.HEIGHT = height;
+	}
+
 	public synchronized void start() {
 		thread = new Thread(this);
 		thread.start();
@@ -207,6 +224,7 @@ public class Game extends Canvas implements Runnable{
 			entityHandler.tick();
 		}else if(gameState == STATE.Menu) {
 			mainMenu.tick();
+			characterSelect.tick();
 		}
 		
 		
@@ -254,6 +272,7 @@ public class Game extends Canvas implements Runnable{
 			tileMap.renderWorkbenchTiles(g);
 		}else if(gameState == STATE.Menu){
 			mainMenu.render(g);
+			characterSelect.render(g);
 		}
 		initInventory();
 		

@@ -3,6 +3,8 @@ package Tools;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import Entities.Seeds.EntityLilypatSeed;
+import GameObjects.Enemies.Burnard;
 import GameObjects.Enemies.Thief;
 import GameObjects.Plants.Infertrunk;
 import GameObjects.Plants.Viperus;
@@ -39,31 +41,37 @@ public class KeyInput extends KeyAdapter{
 	}
 	
 	public void keyPressed(KeyEvent e) {
+		if(game.gameState == STATE.Menu){
+			return;
+		}
+
 		int key = e.getKeyCode();
-		
-		for(int i = 0; i < handler.object.size(); i++) {
+
+		for (int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);
-			if(tempObject.getID() == ID.Player) {
-				if(key == KeyEvent.VK_W) {
-					tempObject.setVelocityY(-5); 
-					this.wkey=true;
+			if (tempObject.getID() == ID.Player) {
+				if (key == KeyEvent.VK_W) {
+					tempObject.setVelocityY(-5);
+					this.wkey = true;
 				}
-				if(key == KeyEvent.VK_S) {
+				if (key == KeyEvent.VK_S) {
 					tempObject.setVelocityY(5);
-					this.skey=true;
+					this.skey = true;
 				}
-				if(key == KeyEvent.VK_D) {
+				if (key == KeyEvent.VK_D) {
 					tempObject.setVelocityX(5);
-					this.dkey=true;
+					this.dkey = true;
 				}
-				if(key == KeyEvent.VK_A) {
+				if (key == KeyEvent.VK_A) {
 					tempObject.setVelocityX(-5);
-					this.akey=true;
+					this.akey = true;
 				}
 			}
-			
-			
+
+
 		}
+
+
 		
 		if(key == KeyEvent.VK_ESCAPE) System.exit(1);
 		
@@ -91,7 +99,7 @@ public class KeyInput extends KeyAdapter{
 		//TODO: REMOVE THESE WHEN GAME DONE
 		//SPAWNING MOBS WITH A KEY only for testing purposes ofc
 		if(key == KeyEvent.VK_F) {
-			handler.addObject(new Thief(100, 100, ID.Enemy, 100, 10, 3000, handler));
+			handler.addObject(new Burnard(100, 100, ID.Enemy,100, 3000, handler.getPlayer(), handler));
 		}
 
 		if(key == KeyEvent.VK_N){
@@ -100,48 +108,64 @@ public class KeyInput extends KeyAdapter{
 
 		if(key == KeyEvent.VK_L) {
 //			handler.addObject(new Infertrunk(400, 400, ID.Plant, "Infertrunk", "Defender", handler));
-			handler.addObject(new Viperus(400, 400, ID.Plant, "Viperus", "Defender"));
+			handler.addObject(new Infertrunk(400, 400, ID.Plant, "Infertrunk", "Defender", handler));
 		}
 		
 	}
 	
 	public void keyReleased(KeyEvent e) {
+
+		//TODO: Fix bug where clicking workbench and then hitting E, player will keep walking
+
+		//Returns when the state hasnt switched to the 'game' state.
+		if(game.gameState == STATE.Menu || game.gameState == STATE.Workbench){
+			if(game.gameState == STATE.Workbench){
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E){
+					game.gameState = STATE.Game;
+					menus.openWorkbench = false;
+				}
+			}
+			return;
+		}
+
 		int key = e.getKeyCode();
-		
-		for(int i = 0; i < handler.object.size(); i++) { // fix the problem, wayy better movement than ^
+
+		for (int i = 0; i < handler.object.size(); i++) { // fix the problem, wayy better movement than ^
 			GameObject tobject = handler.object.get(i);
-			if(tobject.getID() == ID.Player) {
-				if(key == KeyEvent.VK_W && skey == false) {
-					this.wkey=false;
+			if (tobject.getID() == ID.Player) {
+				if (key == KeyEvent.VK_W && skey == false) {
+					this.wkey = false;
 					tobject.setVelocityY(0);
-				}else if(key == KeyEvent.VK_W && skey == true) {
+				} else if (key == KeyEvent.VK_W && skey == true) {
 					tobject.setVelocityY(5);
 					this.wkey = false;
 				}
-				if(key == KeyEvent.VK_S && wkey == false) {
+				if (key == KeyEvent.VK_S && wkey == false) {
 					this.skey = false;
 					tobject.setVelocityY(0);
-				}else if(key == KeyEvent.VK_S && wkey == true) {
+				} else if (key == KeyEvent.VK_S && wkey == true) {
 					tobject.setVelocityY(-5);
 					this.skey = false;
 				}
-				
-				if(key == KeyEvent.VK_D && akey == false) {
-					this.dkey=false;
+
+				if (key == KeyEvent.VK_D && akey == false) {
+					this.dkey = false;
 					tobject.setVelocityX(0);
-				}else if(key == KeyEvent.VK_D && akey == true) {
+				} else if (key == KeyEvent.VK_D && akey == true) {
 					tobject.setVelocityX(-5);
 					this.dkey = false;
 				}
-				if(key == KeyEvent.VK_A && dkey == false) {
+				if (key == KeyEvent.VK_A && dkey == false) {
 					this.akey = false;
 					tobject.setVelocityX(0);
-				}else if(key == KeyEvent.VK_A && dkey == true) {
+				} else if (key == KeyEvent.VK_A && dkey == true) {
 					tobject.setVelocityX(5);
 					this.akey = false;
 				}
 			}
 		}
+
+
 	}
 	
 }

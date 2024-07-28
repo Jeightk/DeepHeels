@@ -48,7 +48,9 @@ public class Player extends GameObject{
 	public Craftable Chestplate;
 	public Craftable Weapon;
 	public Entity Offhand;
-	
+
+	public String character;
+
 	double rotationRequired = Math.toRadians (45);
 //	AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, (int)x, (int)y);
 //	AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
@@ -61,7 +63,8 @@ public class Player extends GameObject{
 		this.game = game;
 		this.inventory = inventory;
 		this.healthbar = healthbar;
-		
+
+		this.character = handler.getCharacterName();
 	}
 
 	@Override
@@ -95,21 +98,46 @@ public class Player extends GameObject{
 	//Hackyish way to animate the player, probably way better ways but to lazy to learn rn...
 	@Override
 	public void render(Graphics g) {
+
+
+
 		if(velX < 0) {
 			//Setting the direction of the idle image
 			direction = false;
-			
-			directionalAnimation(g, 64, -64);
-		}else if(velX > 0) {
-			direction = true;
-			
-			directionalAnimation(g, 0, 64);
-		}else {
-			if(direction) {
-				directionalAnimation(g, 0, 64);
-			}else {
+
+			if(character == "Myk"){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
+				directionalAnimation(g, 0, -64);
+			}else{
 				directionalAnimation(g, 64, -64);
 			}
+
+
+		}else if(velX > 0) {
+			direction = true;
+
+			if(character == "Myk"){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
+				directionalAnimation(g, 64, 64);
+			}else{
+				directionalAnimation(g, 0, 64);
+			}
+
+
+		}else {
+
+			if(character == "Myk"){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
+				if(direction) {
+					directionalAnimation(g, 64, 64);
+				}else {
+					directionalAnimation(g, 0, -64);
+				}
+			}else if(character == "Otis"){
+				if(direction) {
+					directionalAnimation(g, 0, 64);
+				}else {
+					directionalAnimation(g, 64, -64);
+				}
+			}
+
 		}
 		
 		healthbar.render(g, HEALTH);
@@ -123,7 +151,6 @@ public class Player extends GameObject{
 				g.drawImage(ImageHandler.flip(rotated, ImageHandler.FLIP_HORIZONTAL), (int)x, (int)y+20, 32, 32, null);
 			}
 		}
-		
 	}
 
 	@Override
@@ -143,16 +170,23 @@ public class Player extends GameObject{
 	
 	//Animating character steps in certain directions
 	private void directionalAnimation(Graphics g, int xOffset, int xDirection) {
-		if(velX != 0 || velY != 0) {
-			if(System.currentTimeMillis()/100 % 2 == 0) {
-				g.drawImage(Game.ss.grab64Image(3, 1, 64, 64), (int)x+xOffset, (int)y, xDirection, 64, null);
+
+		if(character == "Myk"){
+			g.drawImage(Game.ss.grabImage(4, 7, 64, 64), (int)x+xOffset, (int)y, (-1)*xDirection, 64, null);
+		}else{
+			if(velX != 0 || velY != 0) {
+				if(System.currentTimeMillis()/100 % 2 == 0) {
+					g.drawImage(Game.ss.grab64Image(3, 1, 64, 64), (int)x+xOffset, (int)y, xDirection, 64, null);
+				}else {
+					g.drawImage(Game.ss.grab64Image(2, 1, 64, 64), (int)x+xOffset, (int)y, xDirection, 64, null);
+				}
+
 			}else {
 				g.drawImage(Game.ss.grab64Image(2, 1, 64, 64), (int)x+xOffset, (int)y, xDirection, 64, null);
 			}
-			
-		}else {
-			g.drawImage(Game.ss.grab64Image(2, 1, 64, 64), (int)x+xOffset, (int)y, xDirection, 64, null);
 		}
+
+
 	}
 	
 //	HitDetection t = new HitDetection(handler);

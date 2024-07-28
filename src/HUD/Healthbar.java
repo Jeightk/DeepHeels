@@ -22,7 +22,7 @@ public class Healthbar {
 	
 	//RENDERING PLAYER HEALTH BAR
 	public void render(Graphics g, int health) {
-		g.drawImage(Game.healthbarIMG, x-201, y-7, null);
+		g.drawImage(Game.healthbarIMG, Game.WIDTH/2-500, y-7, null);
 		g.setColor(Color.black);
 		g.drawRect(Game.WIDTH/2-(width/2), 25, width, height);
 		g.setColor(Color.red);

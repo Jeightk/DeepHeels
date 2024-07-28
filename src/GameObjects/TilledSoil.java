@@ -31,7 +31,8 @@ public class TilledSoil extends GameObject{
 		if(renderSoil) {
 			g.drawImage(Game.ss.grabImage(8, 2, size, size), (int)x, (int)y, null);
 		}
-		
+
+		//Setting the seed on top of the tilledsoil
 		if(seedID == EntityID.EntityFlamecrestSeed) {
 			if(stage == 0) {
 				g.drawImage(Game.ss.grabBitImage(16, 15, 16, 16), (int)x+4, (int)y+4, null);
@@ -39,6 +40,18 @@ public class TilledSoil extends GameObject{
 				g.drawImage(Game.ss.grabImage(8, 3, size, size), (int)x, (int)y-5, null);
 			}
 			
+		}else if(seedID == EntityID.EntityViperusSeed){
+			if(stage == 0) {
+				g.drawImage(Game.ss.grabBitImage(16, 16, 16, 16), (int)x+4, (int)y+4, null);
+			}else if(stage == 1) {
+				g.drawImage(Game.ss.grabImage(8, 4, size, size), (int)x, (int)y-5, null);
+			}
+		}else if(seedID == EntityID.EntityLilypatSeed){
+			if(stage == 0) {
+				g.drawImage(Game.ss.grabBitImage(15, 16, 16, 16), (int)x+4, (int)y+4, null);
+			}else if(stage == 1) {
+				g.drawImage(Game.ss.grabImage(8, 5, size, size), (int)x, (int)y-5, null);
+			}
 		}
 		
 		

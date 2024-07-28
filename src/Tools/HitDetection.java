@@ -2,7 +2,9 @@ package Tools;
 
 
 import GameObjects.Enemy;
+import GameObjects.Explosion;
 import GameObjects.Plant;
+import Projectiles.Barrel;
 import Projectiles.Bullet;
 import main.GameObject;
 import main.Handler;
@@ -10,6 +12,8 @@ import main.ID;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HitDetection {
 
@@ -42,25 +46,37 @@ public class HitDetection {
 	}
 	
 	public void tick() {
-		newCollision();
+		if(this.mainObj.getID() == ID.Plant){
+			this.plantCollision();
+		}else if(this.mainObj.getID() == ID.Projectile){
+			this.projectileCollision();
+		}else if(this.mainObj.getID() == ID.Enemy){
+			this.enemyCollision();
+		}
+
 	}
-	
+
+
+	private void enemyCollision(){
+		if(this.mainObj.getBound().intersects(handler.getPlayer().getBound())){
+			handler.getPlayer().setHP(handler.getPlayer().getHP() - ((Enemy)this.mainObj).getDMG());
+		}
+	}
+
 	//
-	private void newCollision() {
+	private void plantCollision(){
 		for (GameObject gameObject : handler.getEnemies()) {
 			if (this.mainObj.getBound().intersects(gameObject.getBound()) && this.mainObj.getID() == ID.Plant) {
 
 				if (((Plant) this.mainObj).getType() == "Defender") {
-					if(currentEnemies.containsKey(gameObject)){
+					if (currentEnemies.containsKey(gameObject)) {
 						return;
-					}else{
+					} else {
 						currentEnemies.put(gameObject, true);
 						shootMecha = new ShootMecha(this.mainObj, gameObject);
 						shootMecha.shoot();
 					}
 				}
-			}else if(this.mainObj.getID() == ID.Projectile && this.mainObj.getBound().intersects(gameObject.getBound())){
-				gameObject.setHP(gameObject.getHP() - 5);
 			}else{
 
 				if(currentEnemies.containsKey(gameObject) || gameObject == null){
@@ -70,6 +86,94 @@ public class HitDetection {
 			}
 		}
 	}
+
+	private void projectileCollision(){
+		if(this.mainObj.getClass() == Explosion.class){
+			if(handler.getPlayer().getBound().intersects(this.mainObj.getBound())){
+
+				handler.getPlayer().setHP(handler.getPlayer().getHP() - ((Explosion)this.mainObj).getDAMAGE());
+//				this.renderExplosion();
+			}
+			return;
+		}
+
+		for (GameObject gameObject : handler.getEnemies()) {
+			if(this.mainObj.getID() == ID.Projectile && this.mainObj.getBound().intersects(gameObject.getBound())){
+				gameObject.setHP(gameObject.getHP() - 5);
+				handler.removeObject(this.mainObj);
+			}else{
+
+				if(currentEnemies.containsKey(gameObject) || gameObject == null){
+					currentEnemies.remove(gameObject);
+					shootMecha.stopShoot();
+				}
+			}
+		}
+	}
+
+//	public void renderExplosion(){
+//		float originX = handler.getPlayer().getX();
+//		float originY = handler.getPlayer().getY();
+//		handler.removeObject(this.mainObj);
+//		GameObject t = new Explosion(originX, originY, ID.Enemy, 1);
+//		handler.addObject(t);
+//		Timer timer = new Timer();
+//		timer.schedule(new TimerTask() {
+//			@Override
+//			public void run() {
+//				handler.removeObject(t);
+//				GameObject t2 = new Explosion(originX, originY, ID.Enemy, 2);
+//				handler.addObject(t2);
+//
+//
+//				Timer timer2 = new Timer();
+//				timer2.schedule(new TimerTask() {
+//					@Override
+//					public void run() {
+//						handler.removeObject(t2);
+//						GameObject t3 = new Explosion(originX, originY, ID.Enemy, 3);
+//						handler.addObject(t3);
+//
+//						Timer timer3 = new Timer();
+//						timer3.schedule(new TimerTask() {
+//							@Override
+//							public void run() {
+//								handler.removeObject(t3);
+//							}
+//						}, 250);
+//
+//					}
+//				}, 250);
+//			}
+//		}, 250);
+//	}
+
+
+	//OUT WITH THE OLD AND IN WITH THE NEW, REMOVED THIS AND DECIDED TO ADD INDIVIDUAL COLLISION METHODS FOR EACH ID FOR EFFICIENCY.
+//	private void newCollision() {
+//		for (GameObject gameObject : handler.getEnemies()) {
+//			if (this.mainObj.getBound().intersects(gameObject.getBound()) && this.mainObj.getID() == ID.Plant) {
+//
+//				if (((Plant) this.mainObj).getType() == "Defender") {
+//					if(currentEnemies.containsKey(gameObject)){
+//						return;
+//					}else{
+//						currentEnemies.put(gameObject, true);
+//						shootMecha = new ShootMecha(this.mainObj, gameObject);
+//						shootMecha.shoot();
+//					}
+//				}
+//			}else if(this.mainObj.getID() == ID.Projectile && this.mainObj.getBound().intersects(gameObject.getBound())){
+//				gameObject.setHP(gameObject.getHP() - 5);
+//			}else{
+//
+//				if(currentEnemies.containsKey(gameObject) || gameObject == null){
+//					currentEnemies.remove(gameObject);
+//					shootMecha.stopShoot();
+//				}
+//			}
+//		}
+//	}
 	
 	//TODO: NEEDS A BIT MORE TWEEKING, COULD CHECK IDS OF GAMEOBJECT BEFORE CYCLING THROUGH TO REDUCE THE AMOUNT OF OBJECTS THAT THE LOOP IS CYCLING THRU
 //	private void collision() {
@@ -117,52 +221,5 @@ public class HitDetection {
 //		}
 //		
 //	}
-
-
-	private void registerObj(ID id) {
-		if(this.mainObj.getID() == ID.Enemy) {
-		}
-		
-		
-	}
-	
-	
-	public void DetectHit(GameObject tObject, GameObject player) {
-		currentPhysical = System.currentTimeMillis();
-		if(hitDetected) {
-			//Getting the newest time and subtracting with the last iterated time, then if thats greater than the attack delay value aka attackspeed then iterate again.
-			
-			if(player.getHP() - ((Enemy)tObject).getDMG() < 0) {
-				System.out.println("GG");
-				return;
-			}
-			
-			if(currentPhysical - lastTimePhysical > ((Enemy)tObject).getAttackSpeed()) {
-				player.setHP(player.getHP()-((Enemy)tObject).getDMG());
-				((Enemy)tObject).AttackingRender(player);
-				lastTimePhysical = System.currentTimeMillis();
-			}
-		}
-	}
-	
-	public void DetectShoot(GameObject plant, GameObject Enemy) {
-		this.shootDetected = true;
-		currentShoot = System.currentTimeMillis();
-		if(shootDetected) {
-			if(currentShoot - lastTimeShoot > ((Plant)plant).getShootSpeed()) {
-				System.out.println("test");
-				lastTimePhysical = System.currentTimeMillis();
-			}
-		}
-	}
-	
-	
-	public void cancelHit() {
-		hitDetected = false;
-	}
-	
-	public void cancelShoot() {
-		this.shootDetected = false;
-	}
 	
 }

@@ -36,6 +36,7 @@ public class MainMenu{
 	public boolean renderLoadButton = false;
 	public boolean renderAboutButton = false;
 	public boolean renderLetter = false;
+	public boolean isCharacterSelect = false;
 	
 	public static BufferedImage mb1 = null;
 	
@@ -51,39 +52,45 @@ public class MainMenu{
 	}
 	
 	public void render(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(Color.BLACK);
-		g2.fillRect(rectangleX, rectangleY, 20, 20);
-		g2.fillRect(rectangleA, rectangleB, 20, 20);
-		
+		if(isCharacterSelect == false){
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(Color.BLACK);
+			g2.fillRect(rectangleX, rectangleY, 20, 20);
+			g2.fillRect(rectangleA, rectangleB, 20, 20);
+
 //		g2.drawImage(grasslandscape.getLandscape(), null, 300, 300);
-		g.drawImage(grasslandscape.getLandscape(), 0, 0, game.getWidth(), game.getHeight(), null);
-		if(renderPlayButton) {
-			g.drawImage(Game.mainMenubackgroundPlayClick, 0, 0, null);
-		}else if(renderLoadButton){
-			g.drawImage(Game.mainMenubackgroundLoadClick, 0, 0, null);
-		}else if(renderQuitButton) {
-			g.drawImage(Game.mainMenubackgroundQuitClick, 0, 0, null);
-		}else if(renderAboutButton) {
-			g.drawImage(Game.mainMenubackgroundAboutClick, 0, 0, null);
-		}else if(renderLetter) {
-			
-		}else {
-			g.drawImage(Game.mainMenubackground, 0, 0, null);
+			g.drawImage(grasslandscape.getLandscape(), 0, 0, game.getWidth(), game.getHeight(), null);
+			if(renderPlayButton) {
+				g.drawImage(Game.mainMenubackgroundPlayClick, 0, 0, null);
+			}else if(renderLoadButton){
+				g.drawImage(Game.mainMenubackgroundLoadClick, 0, 0, null);
+			}else if(renderQuitButton) {
+				g.drawImage(Game.mainMenubackgroundQuitClick, 0, 0, null);
+			}else if(renderAboutButton) {
+				g.drawImage(Game.mainMenubackgroundAboutClick, 0, 0, null);
+			}else if(renderLetter) {
+
+			}else {
+				g.drawImage(Game.mainMenubackground, 0, 0, null);
+			}
 		}
+
 		
 	}
 	
 	private int direction = 1;
 	private int speed = 10;
 	public void tick() {
-		rectangleX+=speed * direction;
-		rectangleA+=speed * direction;
-		if(rectangleX >= Game.WIDTH) {
-			direction = -1;
-		}else if(rectangleX <= 0) {
-			direction = 1;
+		if(isCharacterSelect == false){
+			rectangleX+=speed * direction;
+			rectangleA+=speed * direction;
+			if(rectangleX >= Game.WIDTH) {
+				direction = -1;
+			}else if(rectangleX <= 0) {
+				direction = 1;
+			}
 		}
+
 	}
 	
 	

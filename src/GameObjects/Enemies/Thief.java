@@ -1,15 +1,16 @@
 package GameObjects.Enemies;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import Entities.*;
+import Entities.Seeds.EntityLilypatSeed;
+import Entities.Seeds.EntityViperusSeed;
 import GameObjects.Enemy;
-import GameObjects.Plant;
 import HUD.Healthbar;
 import Tools.HitDetection;
 import main.Game;
@@ -25,28 +26,63 @@ public class Thief extends Enemy{
 	
 	private boolean hitDetected = false;
 	private HitDetection hitdetection;
-	
+
+	private boolean walking = true;
+	private int walkingAnimation = 1;
+
 	private Healthbar healthbar;
-	
-	public Thief(float x, float y, ID id, int HP, int DMG, long AttackSpeed, Handler handler) {
-		super(x, y, id, HP, DMG, AttackSpeed);
+
+	private int DMG = 20;
+
+
+	public Thief(float x, float y, ID id, int HP, long AttackSpeed, GameObject player, Handler handler) {
+		super(x, y, id, HP, AttackSpeed);
 		this.handler = handler;
-		
-		for(int i = 0; i < handler.object.size(); i++) {
-			if(handler.object.get(i).getID() == ID.Player) player = handler.object.get(i);
-		}
+
+		this.player = player;
 		
 		
 		healthbar = new Healthbar(10, 10, (int)getX(), (int)getY()-50);
-		
-//		this.hitdetection = new HitDetection(handler);
+
+
+		walkingAnimation();
+		this.hitdetection = new HitDetection(handler, this);
 	}
 
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(Game.enemySS.grab64Image(2, 1, 64, 64), (int)x, (int)y, 64, 64, null);
+//		if(walking){
+//			if(System.currentTimeMillis()/100 % 3 == 0) {
+//				g.drawImage(Game.enemySS.grab64Image(1, 1, 64, 64), (int)x, (int)y, 64, 64, null);
+//			}else{
+//				if(walkingCounter % 2 == 0){
+//					g.drawImage(Game.enemySS.grab64Image(2, 1, 64, 64), (int)x, (int)y, 64, 64, null);
+//				}else{
+//					g.drawImage(Game.enemySS.grab64Image(3, 1, 64, 64), (int)x, (int)y, 64, 64, null);
+//				}
+//				walkingCounter++;
+//			}
+//
+//
+//		}
+
+		switch (walkingAnimation) {
+			case 0:
+				g.drawImage(Game.enemySS.grab64Image(1, 1, 64, 64), (int) x, (int) y, 64, 64, null);
+				break;
+			case 1:
+				g.drawImage(Game.enemySS.grab64Image(2, 1, 64, 64), (int) x, (int) y, 64, 64, null);
+				break;
+			case 2:
+				g.drawImage(Game.enemySS.grab64Image(3, 1, 64, 64), (int) x, (int) y, 64, 64, null);
+				break;
+			case 3:
+				g.drawImage(Game.enemySS.grab64Image(4, 1, 64, 64), (int) x, (int) y, 64, 64, null);
+				break;
+		}
+
 		healthbar.render(g, getHP(), getBASEHP());
-		
+
 	}
 	
 	@Override
@@ -57,15 +93,26 @@ public class Thief extends Enemy{
 		float diffX = x - player.getX() - 8;
 		float diffY = y - player.getY() - 8;
 		float distance = (float) Math.sqrt((x-player.getX())*(x-player.getX()) + (y-player.getY())*(y-player.getY()));
-		
-		velX = (float) ((-1.0/distance) * diffX);
-		velY = (float) ((-1.0/distance) * diffY);
-		healthbar = new Healthbar(10, 10, (int)getX()+5, (int)getY()-15);
-		
-		if(this.getHP() <= 0){
-			this.handler.removeObject(this);
+
+		if(distance >= 40){
+			velX = (float) ((-1.0/distance) * diffX);
+			velY = (float) ((-1.0/distance) * diffY);
+			if(walking == false){
+				walking = true;
+				walkingAnimation();
+			}
+		}else{
+			velX = 0;
+			velY = 0;
+			if(walking){
+				walking = false;
+				attackingAnimation();
+			}
 		}
-		
+
+		healthbar = new Healthbar(10, 10, (int)getX()+5, (int)getY()-15);
+
+
 	}
 
 	@Override
@@ -75,19 +122,83 @@ public class Thief extends Enemy{
 
 	@Override
 	public List<Entity> getItemDrops() {
-		List<Entity> drops = Arrays.asList(new EntityIvoriane((int)x, (int)y, EntityID.EntityIvoriane, EntityType.Material), new EntityViperusSeed((int)x, (int)y, EntityID.EntityViperusSeed, EntityType.Seed));
+		List<Entity> drops = Arrays.asList(new EntityIvoriane((int)x, (int)y, EntityID.EntityIvoriane, EntityType.Material), new EntityViperusSeed((int)x, (int)y, EntityID.EntityViperusSeed, EntityType.Seed),
+				new EntityLilypatSeed((int)x, (int)y, EntityID.EntityLilypatSeed, EntityType.Seed));
 		return drops;
 	}
 
-	public void AttackingRender(GameObject player) {
-		if(player.getX()<this.getX()) {
-			this.setX(this.getX()-10);
-		}else {
-			this.setX(this.getX()+10);
-		}
+	public void walkingAnimation() { // Animates the thief walking
+		Timer timer = new Timer();
+		Timer timer2 = new Timer();
+		Timer timer3 = new Timer();
+		Timer timer4 = new Timer();
+
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				if(walking != true){
+					walkingAnimation = 0;
+					timer.cancel();
+					return;
+				}
+				walkingAnimation = 0;
+				timer2.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						walkingAnimation = 1;
+						timer3.schedule(new TimerTask() {
+							@Override
+							public void run() {
+								walkingAnimation = 0;
+								timer4.schedule(new TimerTask() {
+									@Override
+									public void run() {
+										walkingAnimation = 2;
+									}
+								}, 200);
+							}
+						}, 200);
+					}
+				}, 202);
+			}
+		}, 0, 800);
 	}
-	
-	
+
+	public void attackingAnimation(){
+		Timer timer = new Timer();
+		Timer timer2 = new Timer();
+
+
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				if(walking){
+					timer.cancel();
+					return;
+				}
+				walkingAnimation = 3;
+				hitdetection.tick();
+				timer2.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						walkingAnimation = 0;
+					}
+				}, 500);
+
+			}
+		}, 0, 1000);
+	}
+
+	public void objectCleanup(){
+		this.handler.removeObject(this);
+	}
+
+	@Override
+	public int getDMG() {
+		return DMG;
+	}
+
+
 	public int getSize() {
 		return size;
 	}

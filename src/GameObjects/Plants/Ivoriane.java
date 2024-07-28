@@ -31,7 +31,17 @@ public class Ivoriane extends Plant{
 
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(Game.ss.grabImage(7, 1, size, size), (int)x, (int)y, null);
+		if(isHarvested){
+			g.drawImage(Game.ss.grabImage(7, 3, size, size), (int)x, (int)y, null);
+		}else{
+			if(System.currentTimeMillis()/1000 % 2 == 0) {
+				g.drawImage(Game.ss.grabImage(7, 1, size, size), (int)x, (int)y, null);
+			}else{
+				g.drawImage(Game.ss.grabImage(7, 2, size, size), (int)x, (int)y, null);
+			}
+		}
+
+
 		
 	}
 

@@ -7,11 +7,10 @@ import main.ID;
 
 import java.awt.*;
 
-public class Viperus extends Plant {
-
+public class Lilypat extends Plant {
 
     private int size = 64;
-    public Viperus(float x, float y, ID id, String name, String type) {
+    public Lilypat(float x, float y, ID id, String name, String type) {
         super(x, y, id, name, type);
     }
 
@@ -22,7 +21,7 @@ public class Viperus extends Plant {
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(Game.ss.grabImage(6, 7, 64, 64), (int)x, (int)y, null);
+        g.drawImage(Game.ss.grabImage(4, 5, 64, 64), (int)x, (int)y, null);
     }
 
     @Override
@@ -45,13 +44,13 @@ public class Viperus extends Plant {
 
     }
 
-    @Override
-    public Rectangle getRange() {
-        return null;
-    }
-
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public Rectangle getRange() {
+        return new Rectangle((int)x-96, (int)y-96, 256, 256);
     }
 
     @Override

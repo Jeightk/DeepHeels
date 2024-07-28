@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Entities.EntityID;
+import GameObjects.Plant;
 import GameObjects.TilledSoil;
 import main.Game;
 import main.GameObject;
@@ -43,10 +44,10 @@ public class TileMap {
 			if(tObject.getID() == ID.Plant) {
 				Tile t = new Tile(tObject.getSize(), tObject.getSize(), (tObject.getX()/tObject.getSize())*tObject.getSize(), (tObject.getY()/tObject.getSize())*tObject.getSize());
 				tileList.add(t);
+
 			}
 		}
-		
-		
+
 		
 		
 		
@@ -146,6 +147,22 @@ public class TileMap {
 		}
 		System.out.println("That tile does not exist??");
 		return 0;
+	}
+
+
+	//Later down the road this could be re-worked, I think the display of the tiles is actually in the rendering and not based off of the farmingmode value.
+	//Soo... maybe could remove the farmingmode value all together from this method and just have clearing and then readding to the lists. but
+	// to lazy to test that right now so we can jus keep it this way.
+	public void updateTiles(boolean farmingmode){
+		System.out.println("Updating tiles ! Farming-Mode: " + farmingmode);
+		this.tileList.clear();
+		this.farmingTileList.clear();
+		if(farmingmode){
+			this.setTiles();
+			this.setFarmableTiles();
+		}else{
+			this.setTiles();
+		}
 	}
 	
 }

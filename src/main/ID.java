@@ -4,6 +4,7 @@ public enum ID {
 
 	Player(),
 	Plant(),
+	Flora(),
 	Workbench(),
 	Enemy(),
 	TilledSoil(),

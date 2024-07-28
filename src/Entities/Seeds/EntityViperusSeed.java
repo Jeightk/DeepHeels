@@ -1,13 +1,14 @@
-package Entities;
+package Entities.Seeds;
 
+import Entities.Entity;
 import main.Game;
 
 import java.awt.*;
 
-public class EntityViperusSeed extends Entity{
+public class EntityViperusSeed extends Entity {
 
     private int baseY;
-    public EntityViperusSeed(float x, float y, EntityID EntityID, EntityType EntityType) {
+    public EntityViperusSeed(float x, float y, Entities.EntityID EntityID, Entities.EntityType EntityType) {
         super(x, y, EntityID, EntityType);
         baseY = (int)this.y;
     }

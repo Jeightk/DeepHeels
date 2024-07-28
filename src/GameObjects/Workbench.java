@@ -9,9 +9,10 @@ import main.ID;
 
 public class Workbench extends GameObject{
 
-	public int size = 32;
+	public int size = 64;
 	
-	public Workbench(float x, float y, ID id) {
+	public Workbench(float x, float y, ID id)
+	{
 		super(x, y, id);
 	}
 
@@ -22,7 +23,7 @@ public class Workbench extends GameObject{
 
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(Game.ss.grabImage(8, 1, size, size), (int)x, (int)y, null);
+		g.drawImage(Game.ss.grab64Image(1, 3, size, size), (int)Game.WIDTH/2-32, (int)y, null);
 		
 	}
 

@@ -12,23 +12,20 @@ public abstract class Enemy extends GameObject{
 	
 	protected int HP;
 	protected int BASEHP;
-	protected int DMG;
 	protected long AttackSpeed;
-	public Enemy(float x, float y, ID id, int HP, int DMG, long AttackSpeed) {
+	public Enemy(float x, float y, ID id, int HP, long AttackSpeed) {
 		super(x, y, id);
 		this.HP = HP;
 		this.BASEHP = HP;
-		this.DMG = DMG;
 		this.AttackSpeed = AttackSpeed;
 	}
 	
 	
 	public abstract void render(Graphics g);
 	public abstract void tick();
-	public abstract List<Entity> getItemDrops();
-	
-	public abstract void AttackingRender(GameObject player);
-	
+	public abstract List<Entity> getItemDrops(); // item drops of the enemy
+	public abstract void objectCleanup(); // removes any timers ; or things attached to object before object itself is removed
+
 	public void setHP(int hp) {
 		this.HP = hp;
 	}
@@ -37,9 +34,7 @@ public abstract class Enemy extends GameObject{
 		return this.HP;
 	}
 	
-	public int getDMG() {
-		return this.DMG;
-	}
+	public abstract int getDMG();
 	
 	public void setAttackSpeed(long atkspd) {
 		this.AttackSpeed = atkspd;
