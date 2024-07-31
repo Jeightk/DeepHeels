@@ -1,9 +1,6 @@
 package Tools;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import Entities.Craftable;
 import Entities.CraftableHandler;
@@ -14,6 +11,10 @@ import Entities.EntityType;
 
 
 public class Recipes {
+
+	Map<EntityID, Integer> hotrodRecipe = Map.of(EntityID.EntityFlamecrest, 1, EntityID.EntityIvoriane, 2);
+	Map<EntityID, Integer> tillRecipe = Map.of(EntityID.EntityIvoriane, 3);
+
 
 	private CraftableHandler craftableHandler;
 	
@@ -36,8 +37,8 @@ public class Recipes {
 	//Temp place to add craftables to the list
 	public void addIt() {
 		//int slot is the damage amplifier
-		craftableHandler.addCraftable(new EntityHotrod(Arrays.asList(EntityID.EntityFlamecrest, EntityID.EntityIvoriane), EntityID.EntityHotrod, "Hotrod", 35, EntityType.Weapon));
-		craftableHandler.addCraftable(new EntityTill(Arrays.asList(EntityID.EntityIvoriane, EntityID.EntityIvoriane, EntityID.EntityIvoriane), EntityID.EntityTill, "Till", 11, EntityType.Weapon));
+		craftableHandler.addCraftable(new EntityHotrod(hotrodRecipe, EntityID.EntityHotrod, "Hotrod", 35, EntityType.Weapon));
+		craftableHandler.addCraftable(new EntityTill(tillRecipe, EntityID.EntityTill, "Till", 11, EntityType.Weapon));
 	}
 	
 	

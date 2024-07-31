@@ -1,11 +1,8 @@
 package Menus;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import Entities.Craftable;
@@ -150,42 +147,23 @@ public class WorkbenchMenu {
 		
 		//Cycles through all recipes to match which ones are craftable with the given inventory.
 		for(int i = 0; i < recipes.Allrecipes.size(); i++) {
-//			itemTest = inventory.TOTALInventory;
-//			inventoryToSet = inventory.TOTALInventory;
-//			itemTest = recipes.Allrecipes.get(i).getRecipe();
-//			List<EntityID> itemTestToList = new ArrayList<>();
-//			for(EntityID id : itemTest) {
-//				itemTestToList.add(id);
-//			}
-//			itemTest.retainAll(recipes.Allrecipes.get(i).getRecipe());
-			
-//			if(inventoryToSet.retainAll(itemTest)) {
-//				System.out.println(inventoryToSet);
-//				System.out.println(recipes.Allrecipes.get(i).getRecipe());
-//				System.out.println("--------------------------------------------");
-//			}
 			if(containsRecipe(recipes.Allrecipes.get(i).getRecipe()) && !(craftables.contains(recipes.Allrecipes.get(i)))) {
 				craftables.add(recipes.Allrecipes.get(i));
 			}
-//			if(itemTest.equals(recipes.Allrecipes.get(i).getRecipe()) && !(craftables.contains(recipes.Allrecipes.get(i)))) {
-//				System.out.println("ADDED");
-//				craftables.add(recipes.Allrecipes.get(i));
-//			}
-			
+
 		}
-		
-//		System.out.println("Craftables : " + craftables);
 	}
 	
 	public void clearCraftablesList() {
 		craftables.clear();
 	}
 	
-	public boolean containsRecipe(List<EntityID> recipe) {
-		List<EntityID> copy = new ArrayList<>(inventory.TOTALInventory);
-		
-		for(EntityID ingredient : recipe) {
-			if(!copy.remove(ingredient)) {
+	public boolean containsRecipe(Map<EntityID, Integer> recipe) {
+
+		for(EntityID ingredient : recipe.keySet()) {
+
+			//CHECKS TO MAKE SURE PLAYER INVENTORY HAS CORRECT AMOUNT OF INGREDIENTS TO CRAFT
+			if(inventory.inventory.get(ingredient) == null || recipe.get(ingredient) > inventory.inventory.get(ingredient)) {
 				return false;
 			}
 		}

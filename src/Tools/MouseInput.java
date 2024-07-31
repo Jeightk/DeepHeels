@@ -20,6 +20,7 @@ import Menus.Inventory;
 import Menus.MainMenu;
 import Menus.CharacterSelect;
 import Menus.Menus;
+import Menus.LoadSave;
 import Menus.WorkbenchMenu;
 import Tiles.Tile;
 import Tiles.TileMap;
@@ -47,6 +48,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 	private LevelHandler levelHandler;
 	private MapRender mapRender;
 	private CharacterSelect characterSelect;
+	private LoadSave loadSave;
 
 	private GameObject player;
 	private boolean clickedItemCraftable = false;
@@ -72,7 +74,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 
 	public boolean FarmingMode;
 
-	public MouseInput(Handler handler, TileMap tileMap, Inventory inventory, Menus menus, WorkbenchMenu workbenchmenu, EntityHandler entityHandler, MainMenu mainmenu, PlantGrowth plantGrowth, Game game, LevelHandler levelHandler, MapRender mapRender, CharacterSelect characterSelect) {
+	public MouseInput(Handler handler, TileMap tileMap, Inventory inventory, Menus menus, WorkbenchMenu workbenchmenu, EntityHandler entityHandler, MainMenu mainmenu, PlantGrowth plantGrowth, Game game, LevelHandler levelHandler, MapRender mapRender, CharacterSelect characterSelect, LoadSave loadSave) {
 		this.game = game;
 		this.handler = handler;
 		this.tileMap = tileMap;
@@ -85,6 +87,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 		this.levelHandler = levelHandler;
 		this.mapRender = mapRender;
 		this.characterSelect = characterSelect;
+		this.loadSave = loadSave;
 		FarmingMode = plantGrowth.getFarmingMode();
 
 		player = handler.getPlayer();
@@ -476,7 +479,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 					game.gameState = Game.STATE.Game;
 					mapRender.renderMap();
 					tileMap.setTiles();
-					System.out.println("testo");
+//					System.out.println("testo");
 				}else{
 					characterSelect.permaHighlight = false;
 					characterSelect.highlight = false;
@@ -491,6 +494,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 					mainmenu.isCharacterSelect = true;
 //				mapRender.renderMap();
 //				tileMap.setTiles();
+				}else if(mouseOver(mouseX, mouseY, 122, 451, 203, 70)){
+					loadSave.loadSaves();
 				}
 			}
 

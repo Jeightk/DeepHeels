@@ -3,10 +3,7 @@ package Menus;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import Entities.Craftable;
 import Entities.Entity;
@@ -19,9 +16,6 @@ public class Inventory {
 
 	//The inventory as a whole, the entities and their respective amounts
 	public HashMap<EntityID, Integer> inventory = new HashMap<EntityID, Integer>();
-	
-	//A list of all entities in the inventory : To keep count of how many individual items are in the inventory
-	public ArrayList<EntityID> TOTALInventory = new ArrayList<>();
 	
 	//list of the entities or craftables in the inventory
 	public ArrayList<Object> listInventory = new ArrayList<>();
@@ -129,9 +123,7 @@ public class Inventory {
 	public void addItem(Entity e) {
 		if(inventory.containsKey(e.getEntityID())) {
 			inventory.put(e.getEntityID(), inventory.get(e.getEntityID())+1);
-			TOTALInventory.add(e.getEntityID());
 		}else {
-			TOTALInventory.add(e.getEntityID());
 			listInventory.add(e);
 			inventory.put(e.getEntityID(), 1);
 		}
@@ -141,9 +133,7 @@ public class Inventory {
 	public void addItem(Craftable c) {
 		if(inventory.containsKey(c.getEntityID())) {
 			inventory.put(c.getEntityID(), inventory.get(c.getEntityID())+1);
-			TOTALInventory.add(c.getEntityID());
 		}else {
-			TOTALInventory.add(c.getEntityID());
 			listInventory.add(c);
 			inventory.put(c.getEntityID(), 1);
 		}
@@ -184,7 +174,6 @@ public class Inventory {
 			inventory.put(e, inventory.get(e)-1);
 		}
 		
-		TOTALInventory.remove(e);
 	}
 	
 	public void createSlots(TileMap tileMap) {
@@ -281,10 +270,12 @@ public class Inventory {
 		}
 	}
 	
-	//Removes items of the recipe list when crafting items
-	public void removeCraftMaterials(List<EntityID> recipe) {
-		for(int i = 0; i < recipe.size(); i++) {
-			deleteItem(recipe.get(i));
+	//Removes items of the recipe list when crafting items TODO: Make this so it removes bulk at a time
+	public void removeCraftMaterials(Map<EntityID, Integer> recipe) {
+		for(EntityID ingredient : recipe.keySet()){
+			for(int i = 0; i<recipe.get(ingredient); i++){
+				deleteItem(ingredient);
+			}
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.*;
+import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -14,9 +15,11 @@ public class Window extends Canvas{
 	 * 
 	 */
 	private static final long serialVersionUID = 3574977469333721379L;
-	
+	JFrame frame;
+
+
 	public Window(int width, int height, String title, boolean FULLSCREEN, Game game) {
-		JFrame frame = new JFrame(title);
+		frame = new JFrame(title);
 		
 		
 		//For full screen environment // REMEMBERE CHANGE THE TWO VALUE IN WIDTH OF THE GAME CLASS TO THREE!
@@ -51,6 +54,10 @@ public class Window extends Canvas{
 			}
 		});
 		
+	}
+
+	public void loadSaves(){
+
 	}
 	
 

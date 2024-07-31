@@ -1,0 +1,10 @@
+
+CHARACTER:Myk
+TILLABLE-LAND:9
+INVENTORY.INVENTORY: {EntityFlamecrest=2, EntityFlamecrestSeed=2, EntityTill=1, EntityIvoriane=1}
+INVENTORY.TOTALInventory: [EntityFlamecrest, EntityFlamecrestSeed, EntityFlamecrest, EntityFlamecrestSeed, EntityIvoriane, EntityTill]
+INVENTORY.listInventory: [Entities.EntityIvoriane@9ebd98b, Entities.EntityFlamecrest@23b0e500, Entities.Seeds.EntityFlamecrestSeed@16cd5098, Entities.EntityTill@2beead4d]
+INVENTORY.equippedGear: {}
+INVENTORY.inventoryRegions: [LTiles.Tile;@4f2be525
+INVENTORY.Gear: [Ljava.lang.Object;@185b5aca
+INVENTORY.itemLocation: {Tiles.Tile@23724e12=Entities.EntityIvoriane@9ebd98b, Tiles.Tile@e8f2a2c=Entities.EntityIvoriane@9ebd98b, Tiles.Tile@49559d96=Entities.EntityFlamecrest@23b0e500, Tiles.Tile@5c4732a3=Entities.EntityTill@2beead4d, Tiles.Tile@377bd813=Entities.EntityFlamecrest@23b0e500, Tiles.Tile@579c13d4=Entities.Seeds.EntityFlamecrestSeed@16cd5098, Tiles.Tile@25fd23f1=Entities.Seeds.EntityFlamecrestSeed@16cd5098, Tiles.Tile@77cd75e3=Entities.Seeds.EntityFlamecrestSeed@16cd5098, Tiles.Tile@52cc3ac3=Entities.EntityIvoriane@9ebd98b, Tiles.Tile@2f61a88e=Entities.EntityTill@2beead4d, Tiles.Tile@69a18f74=Entities.Seeds.EntityFlamecrestSeed@16cd5098, Tiles.Tile@692d42b8=Entities.EntityIvoriane@9ebd98b, Tiles.Tile@4c5b370e=Entities.EntityFlamecrest@23b0e500, Tiles.Tile@2099d30f=Entities.EntityFlamecrest@23b0e500}

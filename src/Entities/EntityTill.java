@@ -4,13 +4,14 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import main.Game;
 
 public class EntityTill extends Craftable{
 
-	public EntityTill(List<EntityID> recipe, EntityID entityid, String name, int damage, EntityType EntityType) {
+	public EntityTill(Map<EntityID, Integer> recipe, EntityID entityid, String name, int damage, EntityType EntityType) {
 		super(recipe, entityid, name, damage, EntityType);
 	}
 

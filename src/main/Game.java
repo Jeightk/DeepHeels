@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import Entities.CraftableHandler;
 import Entities.EntityHandler;
-import GameObjects.Player;
+import Saving.SaveFile;
 import GameObjects.Workbench;
 import HUD.Healthbar;
 import Levels.LevelHandler;
@@ -19,10 +19,11 @@ import Menus.Hotbar;
 import Menus.MainMenu;
 import Menus.CharacterSelect;
 import Menus.Menus;
+import Menus.LoadSave;
+import Menus.Settings;
 import Menus.WorkbenchMenu;
 import Tiles.TileMap;
 import Tools.GrassLandscape;
-import Tools.HitDetection;
 import Tools.KeyInput;
 import Tools.MapRender;
 import Tools.MouseInput;
@@ -89,7 +90,11 @@ public class Game extends Canvas implements Runnable{
 	public static BufferedImage mainMenubackgroundLoadClick = null;
 	public static BufferedImage mainMenubackgroundQuitClick = null;
 	public static BufferedImage mainMenubackgroundAboutClick = null;
-	
+
+	private SaveFile saveFile;
+	private Settings settings;
+	private LoadSave loadSave;
+
 	private MapRender mapRender;
 	
 	private TileMap tileMap;
@@ -123,10 +128,11 @@ public class Game extends Canvas implements Runnable{
 	
 	public Game() {
 		handler = new Handler();
+
 		entityHandler = new EntityHandler();
 		craftableHandler = new CraftableHandler();
 		levelHandler = new LevelHandler(handler, this);
-		
+
 		grasslandscape = new GrassLandscape(this);
 		mainMenu = new MainMenu(this, grasslandscape);
 		recipes = new Recipes(craftableHandler);
@@ -140,19 +146,25 @@ public class Game extends Canvas implements Runnable{
 		mapRender = new MapRender(2, handler, entityHandler, inventory, healthbar, this);
 		plantGrowth = new PlantGrowth(handler, tileMap, mapRender);
 
-		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this, levelHandler, mapRender, characterSelect);
+		loadSave = new LoadSave(this, handler, inventory, mapRender, tileMap);
+		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this, levelHandler, mapRender, characterSelect, loadSave);
 
 
 		keyInput = new KeyInput(handler, menus, this, levelHandler);
 		
+
+
+		saveFile = new SaveFile(this, inventory, handler);
+		settings = new Settings(saveFile);
+
 		this.addKeyListener(keyInput);
+		this.addKeyListener(settings);
 		this.addMouseListener(mouseInput);
 		this.addMouseMotionListener(mouseInput);
-		
+
 		handler.addObject(new Workbench(Game.WIDTH/2-32,100, ID.Workbench));
 		new Window(WIDTH, HEIGHT, "DEEP HEELS", false, this);
-		
-		
+
 	}
 	
 	public void init() {

@@ -105,7 +105,7 @@ public class Player extends GameObject{
 			//Setting the direction of the idle image
 			direction = false;
 
-			if(character == "Myk"){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
+			if(character.equalsIgnoreCase("Myk")){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
 				directionalAnimation(g, 0, -64);
 			}else{
 				directionalAnimation(g, 64, -64);
@@ -115,7 +115,7 @@ public class Player extends GameObject{
 		}else if(velX > 0) {
 			direction = true;
 
-			if(character == "Myk"){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
+			if(character.equalsIgnoreCase("Myk")){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
 				directionalAnimation(g, 64, 64);
 			}else{
 				directionalAnimation(g, 0, 64);
@@ -123,14 +123,13 @@ public class Player extends GameObject{
 
 
 		}else {
-
-			if(character == "Myk"){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
+			if(character.equalsIgnoreCase("Myk")){ // HAD TO BE SPECIFC WITH THE SPRITES & DIRECTION OOPS
 				if(direction) {
 					directionalAnimation(g, 64, 64);
 				}else {
 					directionalAnimation(g, 0, -64);
 				}
-			}else if(character == "Otis"){
+			}else if(character.equalsIgnoreCase("Otis")){
 				if(direction) {
 					directionalAnimation(g, 0, 64);
 				}else {
@@ -171,7 +170,7 @@ public class Player extends GameObject{
 	//Animating character steps in certain directions
 	private void directionalAnimation(Graphics g, int xOffset, int xDirection) {
 
-		if(character == "Myk"){
+		if(character.equalsIgnoreCase("Myk")){
 			g.drawImage(Game.ss.grabImage(4, 7, 64, 64), (int)x+xOffset, (int)y, (-1)*xDirection, 64, null);
 		}else{
 			if(velX != 0 || velY != 0) {
