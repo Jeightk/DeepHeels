@@ -228,59 +228,53 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 		//Inventory clicking of items
 		}else if(game.gameState == Game.STATE.Inventory) {
 			
-			
-			
-			for(int i = 0; i < inventory.listInventory.size(); i++) {
-				
-				
-				
-				if(tileMap.inventoryTiles.get(i).isSelected) {
-					System.out.println(inventory.itemLocation.get(tileMap.inventoryTiles.get(i)));
-					
-					try {
-						itemSelected = (Entity) inventory.itemLocation.get(tileMap.inventoryTiles.get(i));
-						inventory.entityMessageID = ((Entity) itemSelected).getEntityID();
-						
-						if((((Entity) itemSelected).getEntityType() == EntityType.Seed)) {
-							inventoryClickE = (Entity) itemSelected;
-							clickedItemEntity = true;
-							itemType = inventoryClickE.getEntityType();
-						}
-						
+			int count = 0;
+			for(EntityID item: inventory.inventory.keySet()){
+				if(tileMap.inventoryTiles.get(count).isSelected) {
+					System.out.println(inventory.itemLocation.get(tileMap.inventoryTiles.get(count)));
+
+					//Setting itemselected
+					itemSelected = inventory.findObjectRelatedToEntityID(item);
+					inventory.entityMessageID = item;
+
+					//If the item selected is a seed
+					if(inventory.findEntityTypeRelatedToEntityID(item) == EntityType.Seed){
+						inventoryClickE = (Entity) itemSelected;
+						clickedItemEntity = true;
+						itemType = inventoryClickE.getEntityType();
+
+
+						//might need to take this part out
 						c = null;
 						clickedItemCraftable = false;
 						clickState = clickedSTATE.ITEM;
-						
+
 						return;
-						
-					}catch(Exception e1) {
-						itemSelected = (Craftable) inventory.itemLocation.get(tileMap.inventoryTiles.get(i));
-						inventory.entityMessageID = ((Craftable) itemSelected).getEntityID();
-						
-						//Clicking items in inventory to equip
-						if((((Craftable) itemSelected).getEntityType() == EntityType.Weapon) || (((Craftable) itemSelected).getEntityType() == EntityType.Armor)){
-							c = (Craftable) itemSelected;
-							clickedItemCraftable = true;
-							itemType = c.getEntityType();
-							
-							inventoryClickE = null;
-							clickedItemEntity = false;
-							clickState = clickedSTATE.ITEM;
-							
-							return;
-						}
-						
+
+					}else if(inventory.findEntityTypeRelatedToEntityID(item) == EntityType.Weapon || inventory.findEntityTypeRelatedToEntityID(item) == EntityType.Armor){
+						c = (Craftable) itemSelected;
+						clickedItemCraftable = true;
+						itemType = c.getEntityType();
+
+						inventoryClickE = null;
+						clickedItemEntity = false;
+						clickState = clickedSTATE.ITEM;
+
+						return;
 					}
-					
-					
-						
-					
+
+
+
+
 					inventory.EntityMessage = true;
-					
+
 					inventory.mouseX = mouseX;
 					inventory.mouseY = mouseY;
 				}
+				count+=1;
 			}
+
+
 			//Eqipping weapons or armor
 			for(int i = 0; i < tileMap.inventoryGearTiles.size(); i++) {
 				if(tileMap.inventoryGearTiles.get(i).isSelected) {
@@ -290,9 +284,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 						//Equipping gear on click
 						if((tileMap.inventoryGearTiles.get(i) == tileMap.inventoryGearTiles.get(5)) && itemType == EntityType.Weapon) {
 							
-							System.out.println("5: " + inventory.equippedGear.containsValue(5));
-							if(inventory.equippedGear.containsValue(5)) {
-								System.out.println("THIS CONTAINS ITEM ALREADY!");
+							System.out.println("5: " + inventory.equippedGear.get(tileMap.inventoryGearTiles.get(5)));
+							if(inventory.equippedGear.get(tileMap.inventoryGearTiles.get(5)) != null) {
 								return;
 							}
 							
@@ -316,10 +309,7 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 						//Equipping offhand items
 						}else if((tileMap.inventoryGearTiles.get(i) == tileMap.inventoryGearTiles.get(4)) && itemType == EntityType.Seed) {
 							
-							System.out.println("EntityType + " + itemType);
-							System.out.println("4: " + inventory.equippedGear.containsValue(4));
 							if(inventory.equippedGear.containsValue(4) || itemType != EntityType.Seed) {
-								System.out.println("THIS CONTAINS ITEM ALREADY!");
 								return;
 							}
 							
@@ -342,10 +332,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 						
 						if(inventory.equippedGear.containsKey(tileMap.inventoryGearTiles.get(i))) {
 							
-							System.out.println("THIS IS THE ITEM: " + inventory.equippedGear.get(tileMap.inventoryGearTiles.get(i)));
-							
+
 							if(inventory.ifCraftable(inventory.equippedGear.get(tileMap.inventoryGearTiles.get(i)))) {
-								System.out.println("looking at til");
 								clickedItemCraftable = true;
 								clickState = clickedSTATE.ITEM;
 								c = (Craftable) inventory.equippedGear.get(tileMap.inventoryGearTiles.get(i));
@@ -370,12 +358,12 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 				
 				//Unequipping craftables
 				if(c != null) {
-					System.out.println("testersmega" + c.getName());
 					if(inventory.equippedGear.containsValue(c)) {
 						for(Tile t : inventory.equippedGear.keySet()) {
 							if(inventory.equippedGear.get(t) == c) {
 								inventory.removeGear(t, c, tileMap.getTilePositionInArray(tileMap.inventoryGearTiles, t));
-								inventory.addItem(c);
+//								inventory.queueItemToAdd(c);
+								inventory.addItem(c.getEntityID());
 								
 								//When unequipping the farming tool
 								if(c.getEntityID() == EntityID.EntityTill) {
@@ -403,13 +391,12 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 					}
 				//Unequipping entities
 				}else if(inventoryClickE != null) {
-					System.out.println("testersBIG");
 					if(inventory.equippedGear.containsValue(inventoryClickE)) {
 						for(Tile t : inventory.equippedGear.keySet()) {
 							if(inventory.equippedGear.get(t) == inventoryClickE) {
-								System.out.println("testers");
 								inventory.removeGear(t, inventoryClickE, tileMap.getTilePositionInArray(tileMap.inventoryGearTiles, t));
-								inventory.addItem(inventoryClickE);
+//								inventory.queueItemToAdd(inventoryClickE);
+								inventory.addItem(inventoryClickE.getEntityID());
 								clickedItemEntity = false;
 								clickState = clickedSTATE.NOITEM;
 								menus.inventoryRegionsAccess();
@@ -456,7 +443,8 @@ public class MouseInput extends MouseAdapter implements MouseMotionListener{
 					if(c == null) {
 						return;
 					}
-					inventory.addItem(c);
+//					inventory.queueItemToAdd(c);
+					inventory.addItem(c.getEntityID());
 					inventory.removeCraftMaterials(c.getRecipe());
 					workbenchmenu.findCraftables();
 					menus.workbenchRegionsAccess();

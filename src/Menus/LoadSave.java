@@ -1,5 +1,8 @@
 package Menus;
 
+import Entities.Entity;
+import Entities.EntityID;
+import Tiles.Tile;
 import Tiles.TileMap;
 import Tools.MapRender;
 import main.Game;
@@ -104,7 +107,7 @@ public class LoadSave {
         startButton.setEnabled(false); // Initially disabled
 
         // Apply Gothic style to the button
-        startButton.setFont(new Font("Serif", Font.BOLD, 18)); // Gothic font
+        startButton.setFont(new Font("Monospaced", Font.BOLD, 18)); // Gothic font
         startButton.setForeground(new Color(255, 0, 0)); // Deep red text color
         startButton.setBackground(new Color(0, 0, 0)); // Black background
         startButton.setOpaque(true); // Ensure background color is visible
@@ -256,7 +259,84 @@ public class LoadSave {
         }else if(data.contains("INVENTORY.INVENTORY")){
             int pos = data.indexOf(":");
             String s = data.substring(pos+1, data.length());
-            System.out.println("Inventory.Inventory: " + s);
+            if(s.equals("{}")){
+                return;
+            }
+            String tempString = s;
+//            System.out.println("Inventory.Inventory: " + s + " TOTAL: " + findAmountOfObjects(s));
+            for(int i = 0; i <= findAmountOfObjects(s); i++){
+                System.out.println(i);
+                String name;
+                String amount;
+
+                if(i == 0 && findAmountOfObjects(s) > 1 || i == 0 && findAmountOfObjects(s) == 1){
+                    name = tempString.substring(2, tempString.indexOf('='));
+                }else{
+                    name = tempString.substring(1, tempString.indexOf('='));
+                }
+
+                if(i == 0 && findAmountOfObjects(s) == 1 || i == findAmountOfObjects(s)){
+                    amount = tempString.substring(tempString.indexOf('=')+1, tempString.indexOf('}'));
+                }else{
+                    amount = tempString.substring(tempString.indexOf('=')+1, tempString.indexOf(','));
+                }
+                inventory.inventory.put(EntityID.valueOf(name), Integer.parseInt(amount));
+
+//                System.out.println("NAME: " + name + " Amount: " + amount);
+                tempString=tempString.substring(tempString.indexOf(',')+1, tempString.length());
+//                System.out.println("NEW: " + tempString);
+//                s = s.substring(s.indexOf(',')+1, s.length());
+            }
+
+        }else if(data.contains("INVENTORY.equippedGear")){
+            int pos = data.indexOf(":");
+            String s = data.substring(pos+1, data.length());
+            if(s.equals("{}")){
+                return;
+            }
+            String tempString = s;
+            System.out.println("Inventory.equippedGear: " + s + " TOTAL: " + findAmountOfObjects(s));
+            for(int i = 0; i < findAmountOfObjects(s); i++){
+                System.out.println(i);
+                String tile;
+                String entity;
+
+                if(i == 0 && findAmountOfObjects(s) > 1 || i == 0 && findAmountOfObjects(s) == 1){
+                    tile = tempString.substring(2, tempString.indexOf('='));
+                }else{
+                    tile = tempString.substring(1, tempString.indexOf('='));
+                }
+
+                if(i == 0 && findAmountOfObjects(s) == 1 || i == findAmountOfObjects(s)){
+                    entity = tempString.substring(tempString.indexOf('=')+1, tempString.indexOf('}'));
+                }else{
+                    entity = tempString.substring(tempString.indexOf('=')+1, tempString.indexOf(','));
+                }
+
+                System.out.println("tile: " + tile + " entity: " + entity);
+
+                if(entity.contains("Entities.EntityTill")){
+                    System.out.println("test");
+//                    inventory.equippedGear.put(new, (tobj));
+                }
+
+                tempString=tempString.substring(tempString.indexOf(',')+1, tempString.length());
+                System.out.println("NEW: " + tempString);
+
+
+
+
+//                inventory.Gear[5] = tobj;
+
+
+            }
+
+        }else if(data.contains("INVENTORY.inventoryRegions")){
+            int pos = data.indexOf(":");
+            String s = data.substring(pos+1, data.length());
+            if(s.equals("{}")){
+                return;
+            }
         }
 
 
@@ -265,5 +345,21 @@ public class LoadSave {
         tileMap.setTiles();
 
 
+    }
+
+    public int findAmountOfObjects(String s){
+        int count = 0;
+
+        if(!s.contains(",")){
+            return 1;
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+
+            if (s.charAt(i) == ',') {
+                count++;
+            }
+        }
+        return count;
     }
 }

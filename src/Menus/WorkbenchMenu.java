@@ -3,6 +3,7 @@ package Menus;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import Entities.Craftable;
@@ -28,7 +29,7 @@ public class WorkbenchMenu {
 	//For running through the sets to find the craftables one time in the render
 	
 	//All craftable items
-	public ArrayList<Craftable> craftables = new ArrayList<>();
+	public Queue<Craftable> craftables = new ConcurrentLinkedQueue<>();
 	
 	//Houses all the individual tiles
 	public Tile[] craftMenuRegions = new Tile[9];
@@ -64,18 +65,20 @@ public class WorkbenchMenu {
 		//Takes the craftable items and prints them into the workbench
 		
 		//MAYBE trying refreshing the render of the inventory to fix issue?
+
 		if(craftables.size() != 0) {
-			for(int i = 0; i < craftables.size(); i++) {
+			int counter = 0;
+			for(Craftable c : craftables) {
 				try {
-					g.drawImage(craftables.get(i).getImage(), (craftmenuX+300)-(150), (craftmenuY+100)+i*70, 32, 32, null);
+					g.drawImage(c.getImage(), (craftmenuX+300)-(150), (craftmenuY+100)+counter*70, 32, 32, null);
 					//TODO: FIX ERROR HERE NOT SURE WHAT IT IS YET
-					g.drawString(craftables.get(i).getName(), (craftmenuX+300)-(50), (craftmenuY+125)+i*70);
+					g.drawString(c.getName(), (craftmenuX+300)-(50), (craftmenuY+125)+counter*70);
 				}catch(Exception e) {
-					System.out.println("ITERATION " + i);
-					System.out.println("WORKBENCHMENU: " + e + " : " +e.getStackTrace()[0].getLineNumber());
+					System.out.println("Workbench bug");
 				}
-				
+				counter+=1;
 			}
+
 		}
 		
 		
@@ -105,16 +108,17 @@ public class WorkbenchMenu {
 	}
 	
 	public void createSlots(TileMap tileMap) {
+		int counter = 0;
 		if(craftables.size() < 9) {
-			for(int i = 0; i < craftables.size(); i++) {
-				Tile t = new Tile(60, 500, craftmenuX+50, (craftmenuY+90)+i*70);
-				craftMenuRegions[i] = t;
+			for(Craftable c : craftables) {
+				Tile t = new Tile(60, 500, craftmenuX+50, (craftmenuY+90)+counter*70);
+				craftMenuRegions[counter] = t;
 				tileMap.workbenchTiles.add(t);
 				if(!(craftableLocation.containsKey(t))) {
-					craftableLocation.put(t, craftables.get(i));
+					craftableLocation.put(t, c);
 				}
 				
-				
+				counter+=1;
 			}
 		}else {
 			for(int i = 0; i < 9; i++) {

@@ -12,8 +12,8 @@ import Entities.EntityType;
 
 public class Recipes {
 
-	Map<EntityID, Integer> hotrodRecipe = Map.of(EntityID.EntityFlamecrest, 1, EntityID.EntityIvoriane, 2);
-	Map<EntityID, Integer> tillRecipe = Map.of(EntityID.EntityIvoriane, 3);
+	public Map<EntityID, Integer> hotrodRecipe = Map.of(EntityID.EntityFlamecrest, 1, EntityID.EntityIvoriane, 2);
+	public Map<EntityID, Integer> tillRecipe = Map.of(EntityID.EntityIvoriane, 3);
 
 
 	private CraftableHandler craftableHandler;

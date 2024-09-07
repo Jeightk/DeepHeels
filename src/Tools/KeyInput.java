@@ -24,7 +24,8 @@ public class KeyInput extends KeyAdapter{
 	private Menus menus;
 	private Game game;
 	private LevelHandler levelHandler;
-	
+	private Inventory inventory;
+
 	private boolean wkey = false;
 	private boolean skey = false;
 	private boolean akey = false;
@@ -33,11 +34,12 @@ public class KeyInput extends KeyAdapter{
 	
 	public boolean FULLSCREEN = false;
 	
-	public KeyInput(Handler handler, Menus menus, Game game, LevelHandler levelHandler) {
+	public KeyInput(Handler handler, Menus menus, Game game, LevelHandler levelHandler, Inventory inventory) {
 		this.handler = handler;
 		this.menus = menus;
 		this.game = game;
 		this.levelHandler = levelHandler;
+		this.inventory = inventory;
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -85,6 +87,7 @@ public class KeyInput extends KeyAdapter{
 			menus.openWorkbench = false;
 			game.gameState = STATE.Game;
 			menus.setEntityMessageVisible(false);
+
 		}
 		
 		//FULLSCREEN MODE!

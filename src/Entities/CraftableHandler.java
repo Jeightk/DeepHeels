@@ -6,8 +6,7 @@ import java.util.LinkedList;
 public class CraftableHandler {
 
 	public LinkedList<Craftable> craftable = new LinkedList<Craftable>();
-	
-	
+
 	public void render(Graphics g) {
 		
 		for(Craftable c : craftable) {

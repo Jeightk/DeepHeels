@@ -193,7 +193,7 @@ public class Player extends GameObject{
 		
 		for(int i = 0; i < entityHandler.entity.size(); i++) {
 			if(getBound().contains(entityHandler.entity.get(i).getX(), entityHandler.entity.get(i).getY())) {
-				inventory.addItem(entityHandler.entity.get(i));
+				inventory.addItem(entityHandler.entity.get(i).getEntityID());
 				entityHandler.entity.remove(i);
 			}
 		}

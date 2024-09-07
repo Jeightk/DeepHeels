@@ -129,14 +129,15 @@ public class Game extends Canvas implements Runnable{
 	public Game() {
 		handler = new Handler();
 
-		entityHandler = new EntityHandler();
 		craftableHandler = new CraftableHandler();
+		recipes = new Recipes(craftableHandler);
+		entityHandler = new EntityHandler(recipes);
+
 		levelHandler = new LevelHandler(handler, this);
 
 		grasslandscape = new GrassLandscape(this);
 		mainMenu = new MainMenu(this, grasslandscape);
-		recipes = new Recipes(craftableHandler);
-		inventory=new Inventory();
+		inventory=new Inventory(entityHandler, craftableHandler);
 		hotbar = new Hotbar(inventory);
 		workbenchmenu = new WorkbenchMenu(inventory, recipes, levelHandler);
 		tileMap = new TileMap(handler);
@@ -150,7 +151,7 @@ public class Game extends Canvas implements Runnable{
 		mouseInput = new MouseInput(handler, tileMap, inventory, menus, workbenchmenu, entityHandler, mainMenu, plantGrowth, this, levelHandler, mapRender, characterSelect, loadSave);
 
 
-		keyInput = new KeyInput(handler, menus, this, levelHandler);
+		keyInput = new KeyInput(handler, menus, this, levelHandler, inventory);
 		
 
 

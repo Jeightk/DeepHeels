@@ -1,13 +1,10 @@
 package Menus;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import Entities.Craftable;
-import Entities.Entity;
-import Entities.EntityID;
+import Entities.*;
 import Tiles.Tile;
 import Tiles.TileMap;
 import main.Game;
@@ -15,19 +12,10 @@ import main.Game;
 public class Inventory {
 
 	//The inventory as a whole, the entities and their respective amounts
-	public HashMap<EntityID, Integer> inventory = new HashMap<EntityID, Integer>();
-	
-	//list of the entities or craftables in the inventory
-	public ArrayList<Object> listInventory = new ArrayList<>();
-	
+	public ConcurrentHashMap<EntityID, Integer> inventory = new ConcurrentHashMap<EntityID, Integer>();
+
 	//List of the gear currently being worn by the player along with the designated tile
-	public HashMap<Tile, Object> equippedGear = new HashMap<Tile, Object>();
-	
-	//Hashmap of the inventory slots and their position
-	public HashMap<Integer, EntityID> inventorySlots = new HashMap<Integer, EntityID>();
-	
-	//Houses all the individual tiles
-	public Tile[] inventoryRegions = new Tile[9];
+	public ConcurrentHashMap<Tile, Object> equippedGear = new ConcurrentHashMap<Tile, Object>();
 	
 	//Houses each gear piece  for saving the position of gear after closing of the inventory
 	public Object[] Gear = new Object[6];
@@ -45,48 +33,50 @@ public class Inventory {
 	
 	int inventoryX = Game.WIDTH/2-300;
 	int inventoryY = 20;
-	
-	
+
+	private EntityHandler entityHandler;
+	private CraftableHandler craftableHandler;
+
+	public Inventory(EntityHandler entityHandler, CraftableHandler craftableHandler){
+		this.entityHandler = entityHandler;
+		this.craftableHandler = craftableHandler;
+	}
+
+
+	//TODO: Need to fix the rendering of inventory on window maximize
 	public void render(Graphics g) {
 //		g.drawImage(Game.inventoryIMG, 20, 20, null);
 		g.drawImage(Game.inventoryIMG, inventoryX-100, inventoryY, null);
 		
 		g.setColor(Color.DARK_GRAY);
-		g.setFont(new Font("Courier", 1, 25));
+		g.setFont(new Font("Monospaced", 1, 25));
 		
 		
 		int counter = 0;
-//		for(EntityID key : inventory.keySet()) {
-		for(int i = 0; i < inventory.size(); i++) {
-			//Counts til the end of the page of inventory space
-			if(counter > 9) {
-				break;
-			}
-			//Checking whether the item is a craftable or entity so we can properly get the name and entityid
-			try {
-				if(listInventory.get(i).getClass().getSuperclass() == Entity.class) {
-					
-					String ent = ((Entity) listInventory.get(i)).getEntityID().toString().substring(6, ((Entity) listInventory.get(i)).getEntityID().toString().length());
-					g.drawImage(((Entity) listInventory.get(i)).getImage(), (inventoryX+300)-170, (inventoryY+105)+counter*70, 32, 32, null);
-					//this line
-					g.drawString(ent + " : "+inventory.get(((Entity) listInventory.get(i)).getEntityID()), (inventoryX+300)-100, (inventoryY+125)+counter*70);
-				}else if(listInventory.get(i).getClass().getSuperclass() == Craftable.class) {
-					String ent = ((Craftable) listInventory.get(i)).getEntityID().toString().substring(6, ((Craftable) listInventory.get(i)).getEntityID().toString().length());
-					g.drawImage(((Craftable) listInventory.get(i)).getImage(), (inventoryX+300)-170, (inventoryY+105)+counter*70, 32, 32, null);
-					g.drawString(ent + " : "+inventory.get(((Craftable) listInventory.get(i)).getEntityID()), (inventoryX+300)-100, (inventoryY+125)+counter*70);
-					
+
+		try{
+			for(EntityID items : inventory.keySet()){
+				if(counter > 9){
+					break;
 				}
-			}catch(Exception e) {
-				System.out.println("INVENTORY: " + e + " : ");
-				e.printStackTrace();
-				//This is most likely the issue here inventory.get(((Entity) listInventory.get(i)).getEntityID())
+
+				try{
+					//Draws the image of the item and then draws the name of the item along with the amount
+					g.drawImage(findImageRelatedToEntityID(items), (inventoryX+300)-170, (inventoryY+105)+counter*70, 32, 32, null);
+					g.drawString(items.toString().substring(6,items.toString().length()) + " : "+inventory.get(items), (inventoryX+300)-100, (inventoryY+125)+counter*70);
+
+
+				}catch(Exception e){
+					System.out.println("Inventory bug");
+					e.printStackTrace();
+				}
+
+				counter+=1;
 			}
-			
-			
-			
-			counter+=1;
-			
+		}catch (Exception e){
+			e.printStackTrace();
 		}
+
 		try {
 			for(Tile t : equippedGear.keySet()) {
 				try {
@@ -99,7 +89,7 @@ public class Inventory {
 						
 					}
 				}catch(Exception e) {
-					System.out.println("INVENTORY: " + e + " : ");
+					System.out.println("Gear bug");
 					e.printStackTrace();
 				}
 				
@@ -119,27 +109,61 @@ public class Inventory {
 		}
 		
 	}
-	
-	public void addItem(Entity e) {
-		if(inventory.containsKey(e.getEntityID())) {
-			inventory.put(e.getEntityID(), inventory.get(e.getEntityID())+1);
-		}else {
-			listInventory.add(e);
-			inventory.put(e.getEntityID(), 1);
+
+
+	public Image findImageRelatedToEntityID(EntityID entityID){
+		for(Entity entity: entityHandler.ENTITIES){
+			if(entity.getEntityID() == entityID){
+				return entity.getImage();
+			}
 		}
-		
-	}
-	
-	public void addItem(Craftable c) {
-		if(inventory.containsKey(c.getEntityID())) {
-			inventory.put(c.getEntityID(), inventory.get(c.getEntityID())+1);
-		}else {
-			listInventory.add(c);
-			inventory.put(c.getEntityID(), 1);
+		for(Craftable craftable: craftableHandler.craftable){
+			if(craftable.getEntityID() == entityID){
+				return craftable.getImage();
+			}
 		}
-		
-		
+		return null;
 	}
+
+	public Object findObjectRelatedToEntityID(EntityID entityID){
+		for(Entity entity: entityHandler.ENTITIES){
+			if(entity.getEntityID() == entityID){
+				return entity;
+			}
+		}
+		for(Craftable craftable: craftableHandler.craftable){
+			if(craftable.getEntityID() == entityID){
+				return craftable;
+			}
+		}
+		return null;
+	}
+
+	public EntityType findEntityTypeRelatedToEntityID(EntityID entityID){
+		for(Entity entity: entityHandler.ENTITIES){
+			if(entity.getEntityID() == entityID){
+				return entity.getEntityType();
+			}
+		}
+		for(Craftable craftable: craftableHandler.craftable){
+			if(craftable.getEntityID() == entityID){
+				return craftable.getEntityType();
+			}
+		}
+		return null;
+	}
+
+	public void addItem(EntityID e) {
+		synchronized (inventory){
+			if(inventory.containsKey(e)) {
+				inventory.put(e, inventory.get(e)+1);
+			}else {
+				inventory.put(e, 1);
+			}
+		}
+
+	}
+
 	
 	public Entity getOffhand() {
 		if(Gear[4] != null) {
@@ -150,55 +174,39 @@ public class Inventory {
 	
 	
 	public void deleteItem(EntityID e) {
-		
-		if(inventory.get(e)-1 == 0) {
-			inventory.remove(e);
-			
-			
-			for(int i = 0; i < listInventory.size(); i++) {
-				//Checking to see if the item in the iteration is a entity or craftable
-				if(listInventory.get(i).getClass().getSuperclass() == Entity.class) {
-					//Casting entity to the object to then check if their entityids match, if so remove the item from the inventory
-					if(((Entity) listInventory.get(i)).getEntityID() == e) {
-						listInventory.remove(listInventory.get(i));
-					}
-				}else if(listInventory.get(i).getClass().getSuperclass() == Craftable.class) {
-					//maybe crafting with craftables down the road
-					if(((Craftable) listInventory.get(i)).getEntityID() == e) {
-						listInventory.remove(listInventory.get(i));
-					}
-				}
-				
+		synchronized (inventory){
+			if(inventory.get(e)-1 == 0) {
+				inventory.remove(e);
+
+			}else {
+				inventory.put(e, inventory.get(e)-1);
 			}
-		}else {
-			inventory.put(e, inventory.get(e)-1);
 		}
-		
 	}
 	
 	public void createSlots(TileMap tileMap) {
-		//Inventory slots
-		if(listInventory.size() < 9) {
-			for(int i = 0; i < listInventory.size(); i++) {
-				Tile t = new Tile(60, 500, inventoryX+50, (inventoryY+90)+i*70);
-				inventoryRegions[i] = t;
+		//Inventory slots [limited to 9 for now]
+		if(inventory.size() < 9) {
+			int count = 0;
+
+			//Cycles through all the items in the inventory and then assigns them to inventory tiles
+			for(EntityID item : inventory.keySet()){
+				Tile t = new Tile(60, 500, inventoryX+50, (inventoryY+90)+count*70);
 				tileMap.inventoryTiles.add(t);
+
+				//CHecks to make sure the tile doesnt already exist
 				if(!(itemLocation.containsKey(t))) {
-					//Check the class identity to set the slot
-					if(listInventory.get(i).getClass().getSuperclass() == Entity.class) {
-						itemLocation.put(t, ((Entity) listInventory.get(i)));
-					}else {
-						itemLocation.put(t, ((Craftable) listInventory.get(i)));
-					}
-					
+
+					//Sets the location of the object in the inventory.
+					itemLocation.put(t, findObjectRelatedToEntityID(item));
+
+
 				}
-				
-				
+				count+=1;
 			}
 		}else {
 			for(int i = 0; i < 9; i++) {
 				Tile t = new Tile(60, 500, inventoryX+50, (inventoryY+90)+i*70);
-				inventoryRegions[i] = t;
 				tileMap.inventoryTiles.add(t);
 				
 			}
@@ -242,21 +250,6 @@ public class Inventory {
 		return false;
 	}
 	
-	//Returns 
-	public void checkInventorySize(Graphics g) {
-		if(listInventory.size() < 9) {
-			for(int i = 0; i < listInventory.size(); i++) {
-				Tile t = inventoryRegions[i];
-				t.render(g);
-			}
-		}else {
-			for(int i = 0; i < 9; i++) {
-				Tile t = inventoryRegions[i];
-				t.render(g);
-			}
-		}
-	}
-	
 	public void renderEntityMessage(Graphics g) {
 		
 		g.setColor(Color.DARK_GRAY);
@@ -281,18 +274,24 @@ public class Inventory {
 	
 	//Equipping gear (VERY SIMPLE) WITH MORE STEPS IN THE MOUSEINPUT FILE
 	public void EquipGear(Tile t, Object o, int placement) {
-		equippedGear.put(t, o);
-		Gear[placement] = o;
+		synchronized (equippedGear){
+			equippedGear.put(t, o);
+			Gear[placement] = o;
+		}
 	}
 	
 	public void removeGear(Tile t, Object o, int placement) {
-		if(t == null) {
-			equippedGear.remove(o);
-		}else {
-			equippedGear.remove(t);
+		synchronized (equippedGear){
+			if(t == null) {
+				equippedGear.remove(o);
+			}else {
+				equippedGear.remove(t);
+			}
+
+			Gear[placement] = null;
 		}
-		
-		Gear[placement] = null;
+
 	}
+
 	
 }

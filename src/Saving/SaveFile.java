@@ -30,6 +30,9 @@ public class SaveFile {
     private Game game;
     private Handler handler;
 
+    //list to show the position of the equippedgear
+    private HashMap<Integer, Object> updatedGearEquipped = new HashMap<>();
+
     public SaveFile(Game game, Inventory inventory, Handler handler){
         this.game = game;
         this.inventory = inventory;
@@ -38,6 +41,7 @@ public class SaveFile {
 
 
     public void saveToFile() throws IOException {
+        detailSave();
         getAllThingsLists();
 
 
@@ -81,13 +85,18 @@ public class SaveFile {
         saveMaterial = saveMaterial+"\n"+"CHARACTER:" + handler.getCharacterName();
         saveMaterial = saveMaterial+"\n"+"TILLABLE-LAND:" + game.getTillableLandAmount();
         saveMaterial = saveMaterial+"\n"+"INVENTORY.INVENTORY: "+inventory.inventory.toString();
-        saveMaterial = saveMaterial+"\n"+"INVENTORY.listInventory: "+inventory.listInventory.toString();
         saveMaterial = saveMaterial+"\n"+"INVENTORY.equippedGear: "+inventory.equippedGear.toString();
-        saveMaterial = saveMaterial+"\n"+"INVENTORY.inventoryRegions: "+inventory.inventoryRegions.toString();
         saveMaterial = saveMaterial+"\n"+"INVENTORY.Gear: "+inventory.Gear.toString();
         saveMaterial = saveMaterial+"\n"+"INVENTORY.itemLocation: "+inventory.itemLocation.toString();
 
 
+    }
+
+    //this method adds the position of the items in the gear slots for easier loading of the save.
+    private void detailSave(){
+        for(int i = 0; i < inventory.Gear.length; i++){
+            System.out.println(inventory.Gear[i]);
+        }
     }
 
 }
